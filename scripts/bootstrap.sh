@@ -33,9 +33,11 @@ fi
 
 # 4. Restore the login token, if provided.
 if [ -n "${COLAB_OAUTH_TOKEN_B64:-}" ]; then
-	printf '%s' "$COLAB_OAUTH_TOKEN_B64" | base64 -d | "$TOOL_PY" -c '
-import sys, keyring
-keyring.set_password("google-colab-cli", "oauth_token", sys.stdin.read())
+	# Decode in Python: GNU and BSD base64 disagree on the decode flag.
+	"$TOOL_PY" -c '
+import base64, os, keyring
+token = base64.b64decode(os.environ["COLAB_OAUTH_TOKEN_B64"]).decode()
+keyring.set_password("google-colab-cli", "oauth_token", token)
 '
 	data_dir="$("$TOOL_PY" -c 'import keyring.util.platform_ as p; print(p.data_root())')"
 	[ -d "$data_dir" ] && chmod -R go-rwx "$data_dir"
