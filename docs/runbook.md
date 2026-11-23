@@ -374,7 +374,8 @@ runtime.
 
 - **Do not rely on the watchdog alone.** It runs on this machine; if the orb is paused or killed it
   cannot stop the GPU, and Colab's own idle timeout is the only backstop. A 60-minute idle window can
-  burn about 6.7 A100 units.
+  burn about 6.7 A100 units. If you stop the GPU by hand, run `scripts/drive-save.sh <name>` first,
+  or the outputs go with `/content`.
 - **Pro has no guaranteed background execution** (Ultra does). A long job needs this machine, and its
   port forward, connected until the job finishes; otherwise reattach and check `/history`.
 - **Sessions belong to the thread that started them.** In a fresh orb, `colab sessions` can show
