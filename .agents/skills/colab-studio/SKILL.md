@@ -10,7 +10,7 @@ Read `AGENTS.md` first: its rules on balance, stopping, and Colab policy apply t
 ## Session steps
 
 1. `source config/account.env`, then `colab usage`. Stop if the balance is below `MIN_BALANCE`. If `GPU` is empty, run `scripts/probe-gpus.sh` and fill in `config/account.env` first.
-2. Start: `colab new -s <task> --gpu "$GPU"`.
+2. Start: `colab new -s <task> --gpu "$GPU"`. An HTTP 503 "Service Unavailable" from `/tun/m/assign` means the GPU type is busy, not that the account lacks it; the CLI retries (`COLAB_CLI_ASSIGN_RETRIES`, `COLAB_CLI_RETRY_BACKOFF`, delay doubles each time). If it still fails, fall back to the next GPU in `GRANTED_GPUS` or try later. "Backend rejected accelerator" means not entitled.
 3. Install and download on the VM, for example:
    ```bash
    colab ssh -s <task> -- 'apt-get -y -qq install aria2 >/dev/null; aria2c -x16 -s16 -d /content/models -o model.safetensors https://huggingface.co/<repo>/resolve/main/<file>' </dev/null > /tmp/<task>-setup.log 2>&1

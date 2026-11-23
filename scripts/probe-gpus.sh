@@ -12,8 +12,9 @@ gpus=("$@")
 [ ${#gpus[@]} -eq 0 ] && gpus=(G4 H100 A100 L4 T4)
 
 # Busy GPUs answer HTTP 503 ("no capacity") rather than refusing; keep asking for a while.
-export COLAB_CLI_ASSIGN_RETRIES="${COLAB_CLI_ASSIGN_RETRIES:-10}"
-export COLAB_CLI_RETRY_BACKOFF="${COLAB_CLI_RETRY_BACKOFF:-20}"
+# The CLI doubles the wait after each retry, so 4 retries from 15 s is about 4 minutes per GPU.
+export COLAB_CLI_ASSIGN_RETRIES="${COLAB_CLI_ASSIGN_RETRIES:-4}"
+export COLAB_CLI_RETRY_BACKOFF="${COLAB_CLI_RETRY_BACKOFF:-15}"
 
 mkdir -p probe-results
 out="probe-results/$(date -u +%Y-%m-%d).md"
