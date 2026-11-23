@@ -1,12 +1,22 @@
 #!/usr/bin/env bash
 # One-time Google sign-in for the Colab CLI.
 #
-# 1. Runs `colab sessions`, which prints a Google sign-in link and waits for a code.
-#    Open the link in a browser signed in to the Google account that holds the
-#    Colab / Google AI plan, click Allow, and paste the code back here.
-# 2. With --export, prints the stored token as one base64 line. Paste that line into
-#    the secret COLAB_OAUTH_TOKEN_B64 (Amp: project secret; elsewhere: your secret store
-#    or environment). Never paste it into a chat.
+# Do this in the user's own browser, not in the orb browser. Google's number-match
+# 2FA expires before a remote browser renders the prompt, so the copy-paste flow
+# below is the one that works.
+#
+# 1. `scripts/login.sh` runs `colab sessions`. With no login stored, the CLI prints
+#      To authorize colab-cli, visit this URL in any browser:
+#        https://accounts.google.com/o/oauth2/auth?...
+#      After approving, Google will display an authorization code.
+#      Enter the authorization code:
+#    Open that URL in a browser signed in to the Google account that holds the
+#    Colab / Google AI plan, click Allow, then paste the code at the prompt.
+#    Paste it into the terminal (the Amp Terminal tab in an orb), never into a chat.
+# 2. With --export, prints the stored token as one base64 line. Store that line as the
+#    secret COLAB_OAUTH_TOKEN_B64 (Amp: project secret; elsewhere: your secret store
+#    or environment), so scripts/bootstrap.sh can restore the login on any machine.
+#    Never print, log, or commit it.
 #
 # Revoke later: myaccount.google.com > Security > Third-party connections > Google Cloud SDK.
 set -euo pipefail
@@ -28,4 +38,5 @@ fi
 
 colab sessions
 echo
-echo "Signed in. Next: scripts/login.sh --export, and store the line as COLAB_OAUTH_TOKEN_B64."
+echo "Signed in. Check it with: colab whoami   (shows the email and scopes; never the token)"
+echo "Next: scripts/login.sh --export, and store the line as COLAB_OAUTH_TOKEN_B64."
