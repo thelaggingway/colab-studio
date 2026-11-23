@@ -1,0 +1,21 @@
+# aria2 input file for the official ComfyUI LTX-2.5 text-to-video workflow (video_ltx2_5_t2v), about 45 GB.
+# Gated: accept the licence at huggingface.co/Lightricks/LTX-2.5; remote.sh adds the HF token header.
+# gemma4_e2b_it is only used by the optional prompt-enhance switch (off by default; t2v-api.json leaves it out).
+https://huggingface.co/Lightricks/LTX-2.5/resolve/main/latent_upscale_models/ltx-2.5-latent-spatial-upscaler-x2-bf16-1.0.safetensors
+  dir=/content/ComfyUI/models/latent_upscale_models
+  out=ltx-2.5-latent-spatial-upscaler-x2-bf16-1.0.safetensors
+https://huggingface.co/Lightricks/LTX-2.5/resolve/main/diffusion_models/ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors
+  dir=/content/ComfyUI/models/diffusion_models
+  out=ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors
+https://huggingface.co/Lightricks/LTX-2.5/resolve/main/vae/ltx-2.5-video-vae-bf16.safetensors
+  dir=/content/ComfyUI/models/vae
+  out=ltx-2.5-video-vae-bf16.safetensors
+https://huggingface.co/Lightricks/LTX-2.5/resolve/main/vae/ltx-2.5-audio-vae-bf16.safetensors
+  dir=/content/ComfyUI/models/vae
+  out=ltx-2.5-audio-vae-bf16.safetensors
+https://huggingface.co/Lightricks/LTX-2.5/resolve/main/text_encoders/gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors
+  dir=/content/ComfyUI/models/text_encoders
+  out=gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors
+https://huggingface.co/Comfy-Org/gemma-4/resolve/main/text_encoders/gemma4_e2b_it_int8_convrot.safetensors
+  dir=/content/ComfyUI/models/text_encoders
+  out=gemma4_e2b_it_int8_convrot.safetensors
