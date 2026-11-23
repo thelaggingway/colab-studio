@@ -338,6 +338,7 @@ quota project (Google's message: "the drive.googleapis.com API requires a quota 
 2. Enable the Drive API at https://console.cloud.google.com/apis/library/drive.googleapis.com.
 3. Put its id in `DRIVE_QUOTA_PROJECT`.
 
+This account's project is already set in `config/account.env`, so Drive saving works as is.
 With `DRIVE_SAVE=auto` (the default) and no project, the script prints that it skipped and exits 0.
 `DRIVE_SAVE=1` forces an attempt, `DRIVE_SAVE=0` turns it off. The idle watchdog calls it before
 stopping the GPU (step 8), capped at 15 minutes so a slow upload cannot hold the GPU forever.
