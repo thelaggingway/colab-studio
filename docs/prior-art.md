@@ -43,7 +43,7 @@ licence) · **GPU** it targets · **headless** · **reuse how**.
 | [scarletkc/colab-playground](https://github.com/scarletkc/colab-playground) | Desktop front end for the official CLI: accounts, cost guards, port forwarding, plugins | 2026-11-23 · 432★ · MIT | any | Yes | Not a recipe source. Useful reference for multi-account and cost-guard UX |
 | [googlecolab/google-colab-cli](https://github.com/googlecolab/google-colab-cli) | The CLI itself; `colab run` is an ephemeral job runner (fresh VM, run a local script, fetch outputs, tear down) | 2026-11-23 · 2963★ · Apache-2.0 | any | Yes | Consider `colab run` for one-shot batch recipes (speech, upscale) instead of a held session with a forwarded port |
 | [camenduru/comfyui-colab](https://github.com/camenduru/comfyui-colab) | The classic ComfyUI Colab notebook family | 2024-08-08 · 551★ · Unlicense | T4 | No | Stale (SD 1.5 era, no updates since 2024). Ignore |
-| [CodeyNotFound/comfyui-Easy-Colab](https://github.com/CodeyNotFound/comfyui-Easy-Colab) | ComfyUI + CivitAI/HF model finder + temporary public link | 2026-05-27 · 16★ · none | T4 | No | Ignore: CivitAI pulls and a public tunnel |
+| [CodeyNotFound/comfyui-Easy-Colab](https://github.com/CodeyNotFound/comfyui-Easy-Colab) | ComfyUI + CivitAI/HF model finder + temporary public link | 2026-05-27 · 16★ · no licence file | T4 | No | Ignore: CivitAI pulls and a public tunnel |
 | [renest-ai/renest-notebooks](https://github.com/renest-ai/renest-notebooks) | Restores a ComfyUI environment from a vendor "hand-off code" over a `trycloudflare` tunnel | 2026-11-10 · 0★ · Apache-2.0 | T4 / L4 / A100 | No | Ignore: vendor lock-in plus a public tunnel |
 
 Two notes. `berkeduruu/colab-studio` has the same name as this repo and a very similar pitch, which is
@@ -77,14 +77,15 @@ are a derivative and the H3 Community licence (US/EU/UK/South Korea exclusion) s
 | [Lightricks/ComfyUI-LTXVideo](https://github.com/Lightricks/ComfyUI-LTXVideo) | Custom nodes plus example workflows for 2.3 and 2.5: single/two-stage, IC-LoRA (depth, pose, HDR, dub-it, spatial upscale), audio-only T2A | 2026-11-12 · 4276★ · NOASSERTION | 32 GB claimed | Yes if driven through the API | Vendor the 2.5 single-stage distilled workflow; install via ComfyUI Manager. Check the licence before copying node code |
 
 Cross-check with the Comfy-Org templates `video_ltx2_5_t2v.json`, `video_ltx2_5_i2v.json`,
-`video_ltx2_5_flf2v.json`, `video_ltx2_5_dfr_i2v.json` and, for 2.3, `video_ltx2_3_*`. Those are the
-graphs the ComfyUI UI shows, which makes them safer than a hand-exported graph.
+`video_ltx2_5_flf2v.json`, `video_ltx2_5_dfr_i2v.json` and, for 2.3, `video_ltx2_3_*` (2026-11-23 ·
+1536★ · MIT, the same source listed under General). Those are the graphs the ComfyUI UI shows, which
+makes them safer than a hand-exported graph.
 
 ## Wan 2.2 (5B and 14B)
 
 | Source | What it gives us | Metadata | GPU | Headless | Reuse how |
 | --- | --- | --- | --- | --- | --- |
-| [Comfy-Org/workflow_templates](https://github.com/Comfy-Org/workflow_templates) | `video_wan2_2_5B_ti2v.json` for TI2V-5B; `video_wan2_2_14B_t2v/i2v/flf2v/s2v/animate.json` for A14B | 2026-11-23 · MIT | 8 GB with offload | n/a | Vendor `video_wan2_2_5B_ti2v.json` as the wan-5b recipe graph |
+| [Comfy-Org/workflow_templates](https://github.com/Comfy-Org/workflow_templates) | `video_wan2_2_5B_ti2v.json` for TI2V-5B; `video_wan2_2_14B_t2v/i2v/flf2v/s2v/animate.json` for A14B | 2026-11-23 · 1536★ · MIT | 8 GB with offload | n/a | Vendor `video_wan2_2_5B_ti2v.json` as the wan-5b recipe graph |
 | [Wan-Video/Wan2.2](https://github.com/Wan-Video/Wan2.2) (official) | Reference implementation, model cards, VRAM/speed numbers, LoRA guidance | 2026-09-21 · 18858★ · Apache-2.0 | 4090-class and up | Yes (`generate.py`) | Reference for the A14B offload flags and for the 5B "runs at 8 GB with offload" claim |
 | [Square-Zero-Labs/Wan2GP-on-Colab](https://github.com/Square-Zero-Labs/Wan2GP-on-Colab) | T4 notebook for Wan2GP (Gradio): reuses the runtime's PyTorch, installs with `uv`, drops `xformers`, warns that 15 GB T4 only manages 5B FastWan at 480p | 2026-11-12 · 210★ · Apache-2.0 | T4 15 GB | No (Gradio + share link) | Port the "reuse Colab's torch, `uv` install, skip `xformers` on T4" steps into `remote.sh`. Not the Gradio part |
 
@@ -96,8 +97,8 @@ is the better route than fighting inference VRAM.
 | Source | What it gives us | Metadata | GPU | Headless | Reuse how |
 | --- | --- | --- | --- | --- | --- |
 | [Tencent-Hunyuan/HunyuanVideo-1.5](https://github.com/Tencent-Hunyuan/HunyuanVideo-1.5) (official) | `generate.py` CLI, step-distilled 480p I2V (8 or 12 steps, 75 s on a 4090), in-repo `ComfyUI/README.md`, Diffusers support, LoRA training code | 2026-04-10 · 4615★ · Tencent Hunyuan Community (excludes EU/UK/South Korea) | 4090-class, 14 GB with offload | Yes | Port `--enable_step_distill` and the 480p distilled settings; follow the in-repo ComfyUI guide rather than a blog |
-| [Comfy-Org/workflow_templates](https://github.com/Comfy-Org/workflow_templates) | `video_hunyuan_video_1.5_720p_t2v.json`, `video_hunyuan_video_1.5_720p_i2v.json` | 2026-11-23 · MIT | 720p needs RAM | n/a | Vendor the 480p/720p graph and drop resolution for T4 |
-| [Zehong-Ma/ComfyUI-MagCache](https://github.com/Zehong-Ma/ComfyUI-MagCache) | Training-free caching, 1.7× on HunyuanVideo 1.5 at 20 steps | — | all | Yes | Cheap speedup if T4 timing is marginal |
+| [Comfy-Org/workflow_templates](https://github.com/Comfy-Org/workflow_templates) | `video_hunyuan_video_1.5_720p_t2v.json`, `video_hunyuan_video_1.5_720p_i2v.json` | 2026-11-23 · 1536★ · MIT | 720p needs RAM | n/a | Vendor the 480p/720p graph and drop resolution for T4 |
+| [Zehong-Ma/ComfyUI-MagCache](https://github.com/Zehong-Ma/ComfyUI-MagCache) | Training-free caching, 1.7× on HunyuanVideo 1.5 at 20 steps | 2025-11-27 · 275★ · Apache-2.0 | all | Yes | Cheap speedup if T4 timing is marginal |
 
 Also relevant: Wan2GP claims 6 GB for HunyuanVideo 1.5 with an 8-step LoRA accelerator, which is the
 only T4-friendly number found; treat it as a lead, not a measurement.
@@ -108,7 +109,7 @@ only T4-friendly number found; treat it as a lead, not a measurement.
 | --- | --- | --- | --- | --- | --- |
 | [kandinskylab/kandinsky-6](https://github.com/kandinskylab/kandinsky-6) (official) | `just setup`, `just download pro-distill`, `just generate '<prompt>'`; Lite Distill 5 s clip: 173.7 s on a 16 GB 5060 Ti, 68 s on a 4090, 78.6 s on A100 80 GB. Also vLLM-Omni, SGLang and FastVideo paths | 2026-11-08 · 325★ · MIT | 16 GB works | Yes | Best fit for a headless recipe: `remote.sh` becomes `just setup && just download lite-distill && just generate`. Needs `uv` and `just` on the VM |
 | [T8mars/Comfyui-Kandinsky-T8](https://github.com/T8mars/Comfyui-Kandinsky-T8) | Native ComfyUI nodes for Lite / Lite Distill / Pro Distill, single-file int8 ConvRot, PiFlow | 2026-10-08 · 7★ · MIT | 16 GB | Yes | Use if the recipe should stay ComfyUI-shaped like the others; otherwise skip |
-| ComfyUI registry node `kandinsky6` | Registry install via ComfyUI Manager, so no template is needed | — | 16 GB | Yes | The node route is what `docs/workflows.md` already assumes |
+| [ComfyUI registry node `kandinsky6`](https://registry.comfy.org/nodes/kandinsky6) | Registry install (`comfy node install kandinsky6`) via ComfyUI Manager, so no template is needed; v1.0.2 adds Lite Distill support | 2026-10-08 (v1.0.2) · 354★ · MIT (kandinskylab) | 16 GB | Yes | The node route is what `docs/workflows.md` already assumes |
 
 Kandinsky has no core Comfy-Org template (only `image_kandinsky5_*` and `video_kandinsky5_*` exist), so
 this is the one video recipe where the official Python path is simpler than the ComfyUI path.
@@ -117,7 +118,7 @@ this is the one video recipe where the official Python path is simpler than the 
 
 | Source | What it gives us | Metadata | GPU | Headless | Reuse how |
 | --- | --- | --- | --- | --- | --- |
-| [Comfy-Org/workflow_templates](https://github.com/Comfy-Org/workflow_templates) | `image_z_image_turbo.json` and `image_z_image_turbo_int8.json`, plus control/depth/pose blueprints | 2026-11-23 · MIT | 16 GB | n/a | Vendor `image_z_image_turbo.json`; this is the z-image recipe graph |
+| [Comfy-Org/workflow_templates](https://github.com/Comfy-Org/workflow_templates) | `image_z_image_turbo.json` and `image_z_image_turbo_int8.json`, plus control/depth/pose blueprints | 2026-11-23 · 1536★ · MIT | 16 GB | n/a | Vendor `image_z_image_turbo.json`; this is the z-image recipe graph |
 | [Tongyi-MAI/Z-Image](https://github.com/Tongyi-MAI/Z-Image) (official) | Diffusers pipeline usage, 8 NFE, no CFG, "fits in 16 GB", benchmark results | 2026-02-09 · 12186★ · Apache-2.0 | 16 GB | Yes (Diffusers) | Reference for sampler settings; the ComfyUI route is faster to stand up |
 | [ekkonwork/free-comfyui-colab-pack](https://github.com/ekkonwork/free-comfyui-colab-pack) | GGUF quant picker with a size/VRAM table, auto-quant by VRAM, per-model `workflow.json` that gets patched to the chosen filenames | 2026-10-06 · 20★ · MIT | T4 | Partly | Copy the quant table and the "patch workflow filenames at runtime" trick for the T4 variant |
 
@@ -128,7 +129,7 @@ Model files are already listed in `docs/workflows.md` (`Comfy-Org/Z-Image-Turbo`
 
 | Source | What it gives us | Metadata | GPU | Headless | Reuse how |
 | --- | --- | --- | --- | --- | --- |
-| [Comfy-Org/workflow_templates](https://github.com/Comfy-Org/workflow_templates) | `image_qwen_Image_2512.json`, `image_qwen_image_2512_with_2steps_lora.json`, `image_qwen_image_edit_2511.json`, `image_qwen_image_edit_2511_int8.json` | 2026-11-23 · MIT | 24 GB at fp8/int8 | n/a | Vendor the int8 edit graph and the 2-step-LoRA T2I graph; they are the cheap variants |
+| [Comfy-Org/workflow_templates](https://github.com/Comfy-Org/workflow_templates) | `image_qwen_Image_2512.json`, `image_qwen_image_2512_with_2steps_lora.json`, `image_qwen_image_edit_2511.json`, `image_qwen_image_edit_2511_int8.json` | 2026-11-23 · 1536★ · MIT | 24 GB at fp8/int8 | n/a | Vendor the int8 edit graph and the 2-step-LoRA T2I graph; they are the cheap variants |
 | [berkeduruu/colab-studio](https://github.com/berkeduruu/colab-studio) | Exact Comfy-Org int8 file names for the Qwen family, plus a Qwen3.5-9B prompt-enhancer slot | 2026-11-19 · 2★ · AGPL-3.0 | L4 | Yes | Copy the file paths and the prompt-enhancer idea (two encoder files, t2i and i2i) |
 | [QwenLM/Qwen-Image](https://github.com/QwenLM/Qwen-Image) (official) | Diffusers usage, prompt guide, 2512 model card links | 2026-02-10 · 8493★ · Apache-2.0 | 24 GB+ | Yes | Prompt guidance only; ComfyUI is the better runner here |
 
@@ -139,7 +140,7 @@ Also [ekkonwork/free-comfyui-colab-pack](https://github.com/ekkonwork/free-comfy
 
 | Source | What it gives us | Metadata | GPU | Headless | Reuse how |
 | --- | --- | --- | --- | --- | --- |
-| [Comfy-Org/workflow_templates](https://github.com/Comfy-Org/workflow_templates) | `image_flux2_klein_text_to_image.json`, `image_flux2_klein_image_edit_4b_base.json`, `image_flux2_klein_image_edit_4b_distilled.json`, plus 9B variants | 2026-11-23 · MIT | 13 GB | n/a | Vendor the 4B distilled edit graph: this is the T4 editing path in `docs/workflows.md` |
+| [Comfy-Org/workflow_templates](https://github.com/Comfy-Org/workflow_templates) | `image_flux2_klein_text_to_image.json`, `image_flux2_klein_image_edit_4b_base.json`, `image_flux2_klein_image_edit_4b_distilled.json`, plus 9B variants | 2026-11-23 · 1536★ · MIT | 13 GB | n/a | Vendor the 4B distilled edit graph: this is the T4 editing path in `docs/workflows.md` |
 | [ostris/ai-toolkit](https://github.com/ostris/ai-toolkit) | Training support for `FLUX.2-klein-base-4B` and `-9B`, plus Qwen-Image, Z-Image, Wan 2.2 | 2026-11-18 · 12700★ · MIT | 24 GB | Yes | Fine-tuning recipe base if we ever train Klein LoRAs |
 | [deluxebear/colabllm](https://github.com/deluxebear/colabllm) | `flux-klein` service: vLLM-Omni on L4 with `--variant fp8r` | 2026-11-23 · 16★ · MIT | L4 / G4 / H100 | Yes | Serve line only, and note it targets **FLUX 3** Klein (5.6B, Kommunity licence), not FLUX.2 Klein 4B |
 
@@ -152,7 +153,7 @@ FLUX.2 **dev** is gated and non-commercial, as `docs/workflows.md` already says.
 | Source | What it gives us | Metadata | GPU | Headless | Reuse how |
 | --- | --- | --- | --- | --- | --- |
 | [numz/ComfyUI-SeedVR2_VideoUpscaler](https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler) | ComfyUI nodes **and** a standalone multi-GPU CLI: `--chunk_size` streaming for long video, `--video_backend ffmpeg --10bit`, model caching, batch directory mode. Its own guidance: 8 GB with GGUF Q4 + BlockSwap, 12-16 GB at fp8, 24 GB+ for fp16 | 2025-12-24 · 3005★ · Apache-2.0 | 8-24 GB | Yes (CLI) | Use the CLI for the upscale recipe: no ComfyUI server needed for a batch pass over `outputs/`. Last push is a year old, but ComfyUI core now ships SeedVR2 natively |
-| [Comfy-Org/workflow_templates](https://github.com/Comfy-Org/workflow_templates) | `utility_seedvr2_3b_int8_upscale_video.json`, `utility_seedvr2_7b_int8_upscale_image.json`, `utility_seedvr2_video_upscale.json` | 2026-11-23 · MIT | 12-16 GB | n/a | Vendor the 3B int8 video graph, which matches the model files in `docs/workflows.md` |
+| [Comfy-Org/workflow_templates](https://github.com/Comfy-Org/workflow_templates) | `utility_seedvr2_3b_int8_upscale_video.json`, `utility_seedvr2_7b_int8_upscale_image.json`, `utility_seedvr2_video_upscale.json` | 2026-11-23 · 1536★ · MIT | 12-16 GB | n/a | Vendor the 3B int8 video graph, which matches the model files in `docs/workflows.md` |
 | [xinntao/Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) | The 2×/4× fallback for a plain resample with no restoration | 2024-08-06 · 37621★ · BSD-3-Clause | any | Yes | Keep as fallback only; no dedicated Comfy-Org template exists, so it runs through ComfyUI's generic upscale-model nodes |
 
 SeedVR2 also has Colab notebooks in the wild (`mikana0918`, `BilalSardar009/SEEDVR-Upscaling-360-videos`)
@@ -163,7 +164,7 @@ but they are single-purpose and unmaintained; the CLI above is better.
 | Source | What it gives us | Metadata | GPU | Headless | Reuse how |
 | --- | --- | --- | --- | --- | --- |
 | [ace-step/ACE-Step-1.5](https://github.com/ace-step/ACE-Step-1.5) (official) | `uv sync`, then `uv run acestep-api` (REST on :8001) or the `acestep` CLI. 2B turbo under 4 GB VRAM, XL ≥12 GB with offload; LoRA from 8 songs in ~1 h on a 3090 | 2026-11-08 · 15106★ · MIT | T4 and up | Yes | The ace-step recipe should be this REST API, not ComfyUI: one `uv sync`, one server, JSON in, audio out |
-| [Comfy-Org/workflow_templates](https://github.com/Comfy-Org/workflow_templates) | `audio_ace_step_1_5_checkpoint.json` (AIO checkpoint), `audio_ace_step1_5_xl_turbo.json`, split-checkpoint variants | 2026-11-23 · MIT | 4-20 GB | n/a | Vendor the AIO checkpoint graph if the recipe should stay ComfyUI-shaped like `minimax-h3` |
+| [Comfy-Org/workflow_templates](https://github.com/Comfy-Org/workflow_templates) | `audio_ace_step_1_5_checkpoint.json` (AIO checkpoint), `audio_ace_step1_5_xl_turbo.json`, split-checkpoint variants | 2026-11-23 · 1536★ · MIT | 4-20 GB | n/a | Vendor the AIO checkpoint graph if the recipe should stay ComfyUI-shaped like `minimax-h3` |
 | [multimodal-art-projection/YuE](https://github.com/multimodal-art-projection/YuE) | YuE2: `pip install .`, 24 GB VRAM, 48 kHz stereo, official Comfy-Org workflow `audio_yue2_text2music.json` | 2026-11-01 · 13689★ · Apache-2.0 code, **CC BY-NC 4.0 weights** | 24 GB | Yes | Only for non-commercial work. Not a drop-in for ACE-Step |
 
 ACE-Step is the cheapest useful output in the whole plan and the official API removes the usual Gradio
@@ -199,7 +200,7 @@ longer maintained", though ComfyUI still ships `audio-chatterbox_tts.json`. That
 
 | Source | What it gives us | Metadata | GPU | Headless | Reuse how |
 | --- | --- | --- | --- | --- | --- |
-| [Comfy-Org/workflow_templates](https://github.com/Comfy-Org/workflow_templates) | `3d_pixal3d_trellis2_image_to_model.json` (TRELLIS.2 and Pixal3D share the graph) | 2026-11-23 · MIT | 14 GB int8 | n/a | Vendor this graph; it is the L4/T4 path |
+| [Comfy-Org/workflow_templates](https://github.com/Comfy-Org/workflow_templates) | `3d_pixal3d_trellis2_image_to_model.json` (TRELLIS.2 and Pixal3D share the graph) | 2026-11-23 · 1536★ · MIT | 14 GB int8 | n/a | Vendor this graph; it is the L4/T4 path |
 | [microsoft/TRELLIS.2](https://github.com/microsoft/TRELLIS.2) (official) | `setup.sh` with flash-attn, cumesh, o-voxel, nvdiffrast; Gradio `app.py`; says 24 GB minimum and H100-tested | 2026-07-10 · 13173★ · MIT | 24 GB | Partly (Gradio app, but callable in Python) | Reference only: the official install is heavy and wants 24 GB. Use ComfyUI plus the int8 files |
 | [berkeduruu/colab-studio](https://github.com/berkeduruu/colab-studio) | Working L4 slot map: `trellis_2_int8_convrot`, `dino_v3_vit_l`, shape and texture VAEs, plus BiRefNet for background removal | 2026-11-19 · 2★ · AGPL-3.0 | L4 | Yes | Copy the five-file list including BiRefNet, which `docs/workflows.md` does not mention |
 
@@ -221,7 +222,7 @@ pre-Ada cards, which is the same trick the Comfy-Org int8 files use for inferenc
 
 | Source | What it gives us | Metadata | GPU | Headless | Reuse how |
 | --- | --- | --- | --- | --- | --- |
-| [vLLM-Omni recipes](https://recipes.vllm.ai/) + [supported models](https://docs.vllm.ai/projects/vllm-omni/en/latest/models/supported_models) | Official `vllm serve <model> --omni` lines for image/video/audio models, with variant flags such as `--variant fp8r` and per-stage overrides | current | H100/H200/B200 class | Yes | Use for the LLM batch recipe and for Qwen3-ASR/TTS serving. Its media recipes assume 80 GB cards, so not for L4/T4 |
+| [vLLM-Omni](https://github.com/vllm-project/vllm-omni) + [recipes.vllm.ai](https://recipes.vllm.ai/) + [supported models](https://docs.vllm.ai/projects/vllm-omni/en/latest/models/supported_models) | Official `vllm serve <model> --omni` lines for image/video/audio models, with variant flags such as `--variant fp8r` and per-stage overrides. The site and docs publish from this repo's `recipes/` | 2026-11-23 · 7920★ · Apache-2.0 | H100/H200/B200 class | Yes | Use for the LLM batch recipe and for Qwen3-ASR/TTS serving. Its media recipes assume 80 GB cards, so not for L4/T4 |
 | [dinhqhuy7/notebook-model-host](https://github.com/dinhqhuy7/notebook-model-host) | Per-model vLLM notebooks with a model-size table per Colab GPU, plus a key-protected OpenAI-compatible proxy | 2026-11-14 · 3★ · MIT | T4 / L4 / A100 | Partly (notebook + tunnel) | Reuse the "which model fits which Colab GPU" table and the vLLM launch cells; drop the Cloudflare tunnel |
 | [deluxebear/colabllm](https://github.com/deluxebear/colabllm) | `colabllm gateway`: a local OpenAI/Anthropic-compatible aggregate gateway in front of several Colab services | 2026-11-23 · 16★ · MIT | any | Yes | Only if we later want several GPUs behind one endpoint |
 
@@ -230,16 +231,16 @@ pre-Ada cards, which is the same trick the Comfy-Org int8 files use for inferenc
 Spaces are hosted Gradio demos, so none of them is something we can run on our own VM. They are still
 useful for checking expected quality and inference parameters before writing a recipe.
 
-| Space | Likes | Last modified | Note |
-| --- | --- | --- | --- |
-| [Tongyi-MAI/Z-Image-Turbo](https://huggingface.co/spaces/Tongyi-MAI/Z-Image-Turbo) | 1944 | 2026-05-22 | Official Z-Image demo, Apache-2.0 card |
-| [mrfakename/Z-Image-Turbo](https://huggingface.co/spaces/mrfakename/Z-Image-Turbo) | 3964 | 2026-10-15 | Fastest community demo; good baseline for latency expectations |
-| [Lightricks/LTX-2-3](https://huggingface.co/spaces/Lightricks/LTX-2-3) | 507 | 2026-11-02 | Official LTX-2.3 demo |
-| [ACE-Step/Ace-Step-v1.5](https://huggingface.co/spaces/ACE-Step/Ace-Step-v1.5) | 600 | 2026-04-02 | Official, MIT card |
-| [Qwen/Qwen3-TTS](https://huggingface.co/spaces/Qwen/Qwen3-TTS) | 2429 | 2026-06-09 | Official TTS demo, Apache-2.0 card |
-| [Qwen/Qwen3-ASR-Demo](https://huggingface.co/spaces/Qwen/Qwen3-ASR-Demo) | 267 | 2025-09-08 | Official ASR demo |
-| [microsoft/TRELLIS.2](https://huggingface.co/spaces/microsoft/TRELLIS.2) | 2455 | 2026-05-20 | Official 3D demo, MIT card |
-| [MiniMaxAI/MiniMax-H3-Turbo-Lora](https://huggingface.co/spaces/MiniMaxAI/MiniMax-H3-Turbo-Lora) | 580 | 2026-08-25 | Official turbo-LoRA demo |
+| Space | Likes | Last modified | Licence | Note |
+| --- | --- | --- | --- | --- |
+| [Tongyi-MAI/Z-Image-Turbo](https://huggingface.co/spaces/Tongyi-MAI/Z-Image-Turbo) | 1944 | 2026-05-22 | Apache-2.0 | Official Z-Image demo |
+| [mrfakename/Z-Image-Turbo](https://huggingface.co/spaces/mrfakename/Z-Image-Turbo) | 3964 | 2026-10-15 | not declared | Fastest community demo; good baseline for latency expectations |
+| [Lightricks/LTX-2-3](https://huggingface.co/spaces/Lightricks/LTX-2-3) | 507 | 2026-11-02 | not declared (model: LTX-2.x Community) | Official LTX-2.3 demo |
+| [ACE-Step/Ace-Step-v1.5](https://huggingface.co/spaces/ACE-Step/Ace-Step-v1.5) | 600 | 2026-04-02 | MIT | Official music demo |
+| [Qwen/Qwen3-TTS](https://huggingface.co/spaces/Qwen/Qwen3-TTS) | 2429 | 2026-06-09 | Apache-2.0 | Official TTS demo |
+| [Qwen/Qwen3-ASR-Demo](https://huggingface.co/spaces/Qwen/Qwen3-ASR-Demo) | 267 | 2025-09-08 | Apache-2.0 | Official ASR demo |
+| [microsoft/TRELLIS.2](https://huggingface.co/spaces/microsoft/TRELLIS.2) | 2455 | 2026-05-20 | MIT | Official 3D demo |
+| [MiniMaxAI/MiniMax-H3-Turbo-Lora](https://huggingface.co/spaces/MiniMaxAI/MiniMax-H3-Turbo-Lora) | 580 | 2026-08-25 | not declared (model: H3 Community) | Official turbo-LoRA demo |
 
 ## Which planned recipes can be mostly assembled
 
