@@ -7,6 +7,8 @@ hand through the official [Colab CLI](https://github.com/googlecolab/google-cola
 2. First time only: `scripts/login.sh`, then store `scripts/login.sh --export` as `COLAB_OAUTH_TOKEN_B64`
 3. `scripts/probe-gpus.sh`, then fill in `config/account.env`
 
+Continuing earlier work? Start with [docs/next-steps.md](docs/next-steps.md).
+
 Then follow [docs/runbook.md](docs/runbook.md): balance, GPU requisition, recipe setup, ComfyUI,
 generate, collect the outputs, release the GPU. It has the expected output for every step, per-GPU
 notes, and the failure signatures with their fixes.

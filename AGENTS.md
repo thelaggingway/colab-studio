@@ -90,6 +90,7 @@ many sessions or a temporary limit. 400 `Backend rejected accelerator` = not ent
 
 ## Layout
 
+- `docs/next-steps.md`: current state, measured numbers, remaining work and working agreements. Read first when continuing.
 - `docs/runbook.md`: the end-to-end procedure, expected output per step, per-GPU notes, failure fixes.
 - `docs/other-systems.md`: Claude Code, Codex, a laptop, another VM.
 - `docs/workflows.md`: which models and workflows fit which GPU, area by area.
@@ -100,6 +101,7 @@ many sessions or a temporary limit. 400 `Backend rejected accelerator` = not ent
 - `scripts/grab-gpu.sh`, `scripts/studio-up.sh`, `scripts/idle-stop.sh`, `scripts/colab-ssh.sh`: get a
   GPU, set it up, hold it, release it, and share one SSH connection.
 - `scripts/drive-save.sh`, `scripts/drive_save.py`: copy a session's outputs to Google Drive.
+- `recipes/draft-handoff/`: draft with LTX-2.5, re-render shots that miss the action with H3 from the draft's frame (`handoff.py`).
 - `recipes/<name>/`: per-model setup (`models.txt`, `remote.sh`), workflow files, and measured times
   and units.
 - `.agents/skills/colab-operator/`: Google's skill for the Colab CLI (vendored; `colab skill` prints
