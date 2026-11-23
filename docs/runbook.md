@@ -285,6 +285,7 @@ subfolder. Check with `colab ls -s <name> /content/ComfyUI/models/diffusion_mode
 
 ```bash
 colab ls -s <name> /content/ComfyUI/output/video
+mkdir -p outputs          # the CLI writes the file directly, so its folder must exist
 colab download -s <name> /content/ComfyUI/output/video/MiniMax_H3_00001_.mp4 outputs/MiniMax_H3_00001_.mp4
 ```
 
@@ -294,6 +295,7 @@ Expected: `[colab] Downloaded '/content/...mp4' to 'outputs/...mp4'`. `outputs/`
   with `[colab] Download failed: [Errno 21] Is a directory`. For a whole folder, tar it on the VM first:
   ```bash
   bash scripts/colab-ssh.sh <name> 'tar -C /content/ComfyUI/output -czf /content/output.tgz .'
+  mkdir -p outputs
   colab download -s <name> /content/output.tgz outputs/output.tgz
   ```
 - **Give the user direct links**, which play in any browser and work on a phone:
@@ -375,6 +377,7 @@ add up. Prefer one.
 | ComfyUI editor blank on a phone | Heavy desktop app | Use a laptop, or direct `/view?...` links. |
 | Balance unchanged after spending | Display lags a few minutes | Use `Usage rate` and wall clock; re-read the balance later. |
 | `[colab] Download failed: [Errno 21] Is a directory` | Gave a directory as the local path | Pass a full file path; tar a folder on the VM first. |
+| `[colab] Download failed: [Errno 2] No such file or directory: 'outputs/...'` | The local folder does not exist (`outputs/` is git-ignored) | `mkdir -p outputs` first. |
 | `[colab] Download failed: File or directory not found` | Wrong path, or `/content` was erased by a stop | Download before stopping; `colab ls` to find the file. |
 | `Session READY.` then 404s | The backend pruned the VM | `colab sessions`, then `colab new`. |
 | `Warning: Could not read the OAuth token from the OS keyring` | Keyring not set up, or no token | `scripts/bootstrap.sh` (restores from the secret), else `scripts/login.sh`. |

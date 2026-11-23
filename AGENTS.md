@@ -36,7 +36,8 @@ recipe setup, ComfyUI, generate, collect, release, and the failure signatures wi
    this machine or Google Drive. For gated models, use `HF_TOKEN`; `scripts/studio-up.sh` forwards it to
    `/content/.hf_token`, and a recipe reads that file (never log the token).
 5. **Copy results back** before stopping: `colab download -s <name> <remote file> outputs/<file>` takes
-   one file and a full local path, and `/content` is erased when the runtime stops. Give the user
+   one file and a full local path, so `mkdir -p outputs` first (`outputs/` is git-ignored), and
+   `/content` is erased when the runtime stops. Give the user
    direct `/view?filename=...&type=output` links and copies in `.amp/in/artifacts/`; ComfyUI's editor
    can render blank on a phone.
 6. **Report units used**: balance before and after, plus the usage rate and time held, in the final
