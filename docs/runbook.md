@@ -370,8 +370,8 @@ colab usage
 
 Expected: `[colab] Stopping session '<name>'...`, `[colab] Session terminated.`, then
 `[colab] No active sessions found on server.` and the new balance. If `studio-up.sh` was running as a
-service, also run `amp orb service stop studio-<name>` so the watchdog does not keep polling a dead
-runtime.
+service, also run `amp orb service stop studio-<name>`: after the watchdog releases the GPU the service
+parks instead of exiting, and a restart would grab a fresh GPU.
 
 - **Do not rely on the watchdog alone.** It runs on this machine; if the orb is paused or killed it
   cannot stop the GPU, and Colab's own idle timeout is the only backstop. A 60-minute idle window can

@@ -75,3 +75,8 @@ echo "$(ts) comfyui reachable on 127.0.0.1:8188 after $(( $(date +%s) - t0 ))s"
 echo "$(ts) open it with: amp orb portal 8188 --title 'ComfyUI'  (or http://127.0.0.1:8188 on this machine)"
 
 bash scripts/idle-stop.sh "$session" "$idle"
+# The service supervisor restarts this script when it exits, so exiting here would grab a
+# fresh GPU seconds after the watchdog released the last one. Park until the service is
+# stopped instead.
+echo "$(ts) $session released by the watchdog; stop this service with: amp orb service stop <name>"
+sleep infinity

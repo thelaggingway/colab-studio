@@ -11,6 +11,9 @@
 #
 # Each attempt uses one CLI retry (~10 s), not a long retry ladder: the CLI doubles its
 # delay per retry (backoff * 2^n), so large COLAB_CLI_ASSIGN_RETRIES values wait for hours.
+#
+# COLAB_NEW_ARGS adds flags to every `colab new`, e.g. COLAB_NEW_ARGS=--high-mem for the
+# high-RAM T4 (12.7 GB RAM cannot hold MiniMax H3's 21 GB + 15 GB files; 51 GB can).
 set -u
 if [ $# -lt 3 ]; then
   echo "usage: scripts/grab-gpu.sh <session> <minutes> <gpu> [gpu...]" >&2
@@ -27,7 +30,7 @@ ts() { date -u +%T; }
 while [ ${#gpus[@]} -gt 0 ] && [ "$(date +%s)" -lt "$end" ]; do
   left=()
   for g in "${gpus[@]}"; do
-    if colab new -s "$session" --gpu "$g" </dev/null >"$log" 2>&1; then
+    if colab new -s "$session" --gpu "$g" ${COLAB_NEW_ARGS:-} </dev/null >"$log" 2>&1; then
       echo "$(ts) GOT=$g"
       exit 0
     fi
