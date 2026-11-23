@@ -26,9 +26,9 @@ point Amp, Claude Code, Codex or another coding agent at this repository and ask
 4. `colab whoami` and `colab usage`: your email, the three scopes, and your unit balance.
 5. **Make `config/account.env` yours.** It holds the repo owner's values. Run `bash scripts/probe-gpus.sh`
    (it starts and immediately stops each GPU, under 0.01 units) and set `GRANTED_GPUS`, `GPU`, `GPU_SMALL`
-   and `PLAN` from its result. Set `DRIVE_QUOTA_PROJECT` to your own Cloud project id, or to empty to skip
-   Drive saves: the owner's project will refuse your login. You can also override any value in the
-   environment instead of editing the file, for example `DRIVE_QUOTA_PROJECT= GPU=L4 bash scripts/...`.
+   and `PLAN` from its result. Set `DRIVE_QUOTA_PROJECT` to your own Cloud project id, or `DRIVE_SAVE=0` to skip
+   Drive saves: the owner's project will refuse your login. You can also override any non-empty value in
+   the environment instead of editing the file, for example `DRIVE_SAVE=0 GPU=L4 bash scripts/...`.
 6. Follow [docs/runbook.md](docs/runbook.md) for a session: balance, GPU requisition, recipe setup,
    ComfyUI, generate, collect outputs, release the GPU. Each step lists its expected output and fixes.
 
