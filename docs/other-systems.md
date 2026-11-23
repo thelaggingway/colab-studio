@@ -43,6 +43,17 @@ export HF_TOKEN=hf_...        # or put it in your shell profile or secret store
 `--header="Authorization: Bearer $(cat /content/.hf_token)"` to aria2. If you download by hand, pass
 the same header and never log the token. Public models work without it.
 
+## Saving outputs to Google Drive
+
+`scripts/drive-save.sh <session>` copies `/content/ComfyUI/output` to
+`<DRIVE_FOLDER>/outputs/<date>/<session>/` using the restored login, with no browser and no
+per-session consent. It runs on the machine that holds the login: an orb, a laptop, another VM.
+
+It does not use `colab drivemount`, which asks for browser approval on every runtime. Instead it
+calls the Drive API directly, which needs a Google Cloud project to bill quota to. Create a free
+project, enable the Drive API, and set `DRIVE_QUOTA_PROJECT` in `config/account.env`; until then the
+script skips and says so.
+
 ## Running a session without Amp
 
 The steps in `docs/runbook.md` work as written, with three differences:

@@ -85,6 +85,8 @@ many sessions or a temporary limit. 400 `Backend rejected accelerator` = not ent
   token ever reaches a terminal or log, clear the scrollback (`tmux clear-history`) and rotate it.
 - `HF_TOKEN` is a Hugging Face token for gated models; it is already set in this project's orbs. Pass
   it to `aria2c` as `--header="Authorization: Bearer $HF_TOKEN"`; never log or commit it.
+- `DRIVE_QUOTA_PROJECT` is a Google Cloud project id, not a secret. The Drive API refuses this login
+  without one; `scripts/drive-save.sh` skips saving until it is set.
 
 ## Layout
 
@@ -97,6 +99,7 @@ many sessions or a temporary limit. 400 `Backend rejected accelerator` = not ent
 - `config/account.env`: account defaults, GPU choices, rates, and `MIN_BALANCE`.
 - `scripts/grab-gpu.sh`, `scripts/studio-up.sh`, `scripts/idle-stop.sh`, `scripts/colab-ssh.sh`: get a
   GPU, set it up, hold it, release it, and share one SSH connection.
+- `scripts/drive-save.sh`, `scripts/drive_save.py`: copy a session's outputs to Google Drive.
 - `recipes/<name>/`: per-model setup (`models.txt`, `remote.sh`), workflow files, and measured times
   and units.
 - `.agents/skills/colab-operator/`: Google's skill for the Colab CLI (vendored; `colab skill` prints

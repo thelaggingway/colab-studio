@@ -40,6 +40,9 @@ cleanup() {
   fi
 }
 trap cleanup EXIT
+# Stopping or restarting the service must not release the GPU: the idle watchdog is what
+# releases it. (SIGKILL and an orb shutdown cannot be caught; Colab's idle timeout is the backstop.)
+trap 'exit 0' TERM INT
 
 bash scripts/grab-gpu.sh "$session" "$grab" "$@"
 assigned=1
@@ -60,15 +63,20 @@ echo "$(ts) setup done in $(( $(date +%s) - t0 ))s"
 
 bash scripts/colab-ssh.sh "$session" -f -N -L 8188:localhost:8188
 up=0
-for _ in $(seq 60); do
+for _ in $(seq 120); do
   if curl -sf -o /dev/null http://127.0.0.1:8188/; then up=1; break; fi
-  sleep 5
+  sleep 1
 done
 if [ "$up" != 1 ]; then
-  echo "$(ts) comfyui did not answer on 127.0.0.1:8188 in 300s; read /content/comfy.log on the VM" >&2
+  echo "$(ts) comfyui did not answer on 127.0.0.1:8188 in 120s; read /content/comfy.log on the VM" >&2
   exit 1
 fi
 echo "$(ts) comfyui reachable on 127.0.0.1:8188 after $(( $(date +%s) - t0 ))s"
 echo "$(ts) open it with: amp orb portal 8188 --title 'ComfyUI'  (or http://127.0.0.1:8188 on this machine)"
 
 bash scripts/idle-stop.sh "$session" "$idle"
+# The service supervisor restarts this script when it exits, so exiting here would grab a
+# fresh GPU seconds after the watchdog released the last one. Park until the service is
+# stopped instead.
+echo "$(ts) $session released by the watchdog; stop this service with: amp orb service stop <name>"
+sleep infinity

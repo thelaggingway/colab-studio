@@ -12,6 +12,7 @@ if [ $# -lt 1 ]; then
   exit 2
 fi
 session="$1"; minutes="${2:-60}"; url="${3:-http://127.0.0.1:8188}"
+here="$(cd "$(dirname "$0")/.." && pwd)"
 last_active=$(date +%s); last_hist=""
 while :; do
   q=$(curl -s -m 10 "$url/queue" 2>/dev/null)
@@ -28,6 +29,15 @@ except Exception: print(0)')
   echo "$(date -u +%T) busy=$busy idle=${idle}m"
   if [ "$idle" -ge "$minutes" ]; then
     echo "idle for ${idle}m, stopping $session"
+    # Save finished outputs to Drive before the runtime, and /content, go away. Skipped when
+    # Drive is not configured; capped so a slow upload cannot hold the GPU forever.
+    if command -v timeout >/dev/null 2>&1; then
+      timeout 900 bash "$here/scripts/drive-save.sh" "$session" ||
+        echo "drive-save did not finish; outputs stay only on the VM" >&2
+    else
+      bash "$here/scripts/drive-save.sh" "$session" ||
+        echo "drive-save did not finish; outputs stay only on the VM" >&2
+    fi
     if colab stop -s "$session" </dev/null; then
       colab sessions </dev/null || true
       colab usage </dev/null | LC_ALL=C tr -cd '\11\12\40-\176' | head -2 || true
