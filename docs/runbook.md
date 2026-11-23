@@ -358,6 +358,9 @@ Measured on the A100 (2026-11-23, rate 6.73/hr): setup 324 s; 864×480 5.2 s cli
 or larger H3 clips spill to system RAM and slow down on the A100; G4's 96 GB is the reason to want one.
 L4 and T4 H3 numbers are in [recipes/minimax-h3/README.md](../recipes/minimax-h3/README.md).
 
+Which model and workflow fits each GPU, area by area (images, video, upscaling, music, speech, 3D,
+training), is in [workflows.md](workflows.md).
+
 Two sessions can run at once on this account (A100 + L4 on 2026-11-23), but each bills, and the rates
 add up. Prefer one.
 

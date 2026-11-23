@@ -90,7 +90,7 @@ many sessions or a temporary limit. 400 `Backend rejected accelerator` = not ent
 
 - `docs/runbook.md`: the end-to-end procedure, expected output per step, per-GPU notes, failure fixes.
 - `docs/other-systems.md`: Claude Code, Codex, a laptop, another VM.
-- `docs/workflows.md`: which models and workflows fit which GPU (lands with PR #1).
+- `docs/workflows.md`: which models and workflows fit which GPU, area by area.
 - `scripts/bootstrap.sh`: install and restore the login, then verify it.
 - `scripts/login.sh`: one-time sign-in and export of the login secret.
 - `scripts/probe-gpus.sh`: which GPUs this account can start; writes `probe-results/`.

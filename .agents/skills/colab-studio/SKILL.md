@@ -68,4 +68,4 @@ and units, and L4/T4 measurements, in its README.
 | Image to 3D | TRELLIS.2-4B | MIT | |
 | Fine-tuning | Unsloth Studio | Apache | |
 
-Which model fits which GPU: `docs/workflows.md` (lands with PR #1).
+Which model fits which GPU, area by area: [`docs/workflows.md`](../../../docs/workflows.md).
