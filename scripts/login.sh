@@ -13,12 +13,15 @@ set -euo pipefail
 TOOL_PY="$(uv tool dir)/google-colab-cli/bin/python"
 
 if [ "${1:-}" = "--export" ]; then
+	# Export only what is needed to refresh the login, so the line stays short.
 	"$TOOL_PY" -c '
-import base64, keyring
+import base64, json, keyring
 t = keyring.get_password("google-colab-cli", "oauth_token")
 if not t:
     raise SystemExit("No Colab login stored yet; run scripts/login.sh first.")
-print(base64.b64encode(t.encode()).decode())
+info = json.loads(t)
+keep = {k: info[k] for k in ("refresh_token", "client_id", "client_secret", "token_uri", "scopes") if k in info}
+print(base64.b64encode(json.dumps(keep, separators=(",", ":")).encode()).decode())
 '
 	exit 0
 fi
