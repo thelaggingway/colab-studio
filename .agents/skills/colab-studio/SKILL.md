@@ -34,7 +34,8 @@ colab sessions && colab usage                              # confirm, then repor
   reports "Missing Models". Gated models need `HF_TOKEN`; `studio-up.sh` forwards it.
 - **`colab download` takes one file and a full local path.** A folder fails; tar it on the VM first.
   `mkdir -p outputs` first, or the CLI cannot create the file. `/content` is erased when the runtime
-  stops, so download before stopping.
+  stops, so download before stopping. `scripts/drive-save.sh <name>` saves the outputs to Drive, and
+  the idle watchdog runs it before stopping the GPU (it needs `DRIVE_QUOTA_PROJECT`).
 - **ComfyUI's editor can be blank on a phone.** Use a laptop or direct `/view?filename=...` links.
 - **The balance lags a few minutes.** `Usage rate` is live; that is how the A100's 6.73/hr was measured.
 - **Never wait for a GPU in a working conversation.** Run the grab as a service, or delegate it to a

@@ -172,15 +172,33 @@ been busy on every attempt so far.
 5. forwards port 8188 and waits for ComfyUI,
 6. runs `scripts/idle-stop.sh` to hold and later release the GPU.
 
-Expected for `recipes/minimax-h3` on an A100 (2026-11-23):
+Expected for `recipes/minimax-h3` on an A100. The 2026-11-23 run with the older script took 324 s
+end to end, 128 s of it the download. The current script prints one line per phase:
 
 ```
+clone_seconds=5
+apt_seconds=NN      # unmeasured on Colab
 download_seconds=128
+pip_seconds=NN      # uv; unmeasured on Colab
 comfyui started
 16:01:17 setup done in 324s
 16:01:53 comfyui reachable on 127.0.0.1:8188 after 360s
 16:01:54 busy=0 idle=0m
 ```
+
+The 324 s and 360 s totals are from the older script; the phase lines replace the guesswork about
+where that time went. What is measured and what is not:
+
+- `clone_seconds`: `git clone --depth 1` of ComfyUI is 64 MB; measured at 4.9 s.
+- `pip_seconds`: the dependency install now uses `uv pip install --system` (falling back to pip).
+  Measured here in clean environments with the same requirements and torch already present: 63 s
+  with uv against 177 s with pip, for the same 106 packages.
+- `download_seconds`: 128 s for the 42 GB H3 set on the 2026-11-23 run.
+- `apt_seconds` and the Colab-side `pip_seconds` are new and unmeasured. The next real run fills
+  them in from the log; record them in [recipes/minimax-h3/README.md](../recipes/minimax-h3/README.md).
+- The phases that can overlap do: the clone runs first because the model folders live inside it,
+  then the dependency install and the download run at the same time. `pip_seconds` is the install
+  alone; `setup done in Ns` is the total.
 
 `debconf: ...` and `dpkg-preconfigure: unable to re-open stdin:` are harmless. If setup fails,
 `studio-up.sh` stops the GPU so it stops billing (`STUDIO_KEEP=1` leaves it up for debugging).
@@ -303,13 +321,37 @@ Expected: `[colab] Downloaded '/content/...mp4' to 'outputs/...mp4'`. `outputs/`
 - Copy what matters into `.amp/in/artifacts/` so it survives the GPU stopping, and embed it in the
   reply. A stopped runtime takes its `/view` links with it.
 
+### Save outputs to Google Drive
+
+```bash
+scripts/drive-save.sh <session>          # <DRIVE_FOLDER>/outputs/<date>/<session>/
+```
+
+It lists `/content/ComfyUI/output` over ssh, downloads each file with `colab download`, and uploads
+it with the restored login, so no browser and no per-session consent. It prints the folder link and
+one line per file. The token never leaves the keyring.
+
+It needs `DRIVE_QUOTA_PROJECT` in `config/account.env`: the Drive API refuses this login without a
+quota project (Google's message: "the drive.googleapis.com API requires a quota project"). Once:
+
+1. Create a project at https://console.cloud.google.com/projectcreate (no billing needed).
+2. Enable the Drive API at https://console.cloud.google.com/apis/library/drive.googleapis.com.
+3. Put its id in `DRIVE_QUOTA_PROJECT`.
+
+With `DRIVE_SAVE=auto` (the default) and no project, the script prints that it skipped and exits 0.
+`DRIVE_SAVE=1` forces an attempt, `DRIVE_SAVE=0` turns it off. The idle watchdog calls it before
+stopping the GPU (step 8), capped at 15 minutes so a slow upload cannot hold the GPU forever.
+
 ## 8. Release the GPU and report
 
-The watchdog that `studio-up.sh` starts stops the GPU after `<idle_minutes>` without a ComfyUI job:
+The watchdog that `studio-up.sh` starts stops the GPU after `<idle_minutes>` without a ComfyUI job,
+saving the outputs to Drive first when it is configured:
 
 ```
 17:12:31 busy=0 idle=60m
 idle for 60m, stopping h3
+drive-save: copied 3 file(s) from h3:/content/ComfyUI/output
+folder: https://drive.google.com/drive/folders/...
 [colab] Stopping session 'h3'...
 [colab] Session terminated.
 [colab] No active sessions found on server.
@@ -386,6 +428,9 @@ add up. Prefer one.
 | `Warning: Could not read the OAuth token from the OS keyring` | Keyring not set up, or no token | `scripts/bootstrap.sh` (restores from the secret), else `scripts/login.sh`. |
 | Sign-in code expires, or `invalid_grant` | Number-match 2FA took too long | Use the user's own browser and paste promptly; not the orb browser. |
 | Watchdog log stops while the GPU is still up | The orb was paused or killed | `colab stop -s <name>` by hand. |
+| `drive_save: Drive refused the request: no quota project` | The Drive API needs a quota project for this login | Set `DRIVE_QUOTA_PROJECT` (step 7). |
+| `drive_save: quota project '<id>' is not usable` | The project does not exist, or the Drive API is not enabled for it | Create and enable it, or fix the id. |
+| `drive-save: skipped, no DRIVE_QUOTA_PROJECT set` | Drive saving is not configured | Expected; outputs still go to `outputs/` with `colab download`. |
 | A100 slow or out of memory at high resolution | It is 40 GB, not 80 | Lower megapixels or duration, or use G4. |
 
 ## 11. Free checks
