@@ -1,3 +1,4 @@
 outputs/
 .env
 *.token.json
+.amp/

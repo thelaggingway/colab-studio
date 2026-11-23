@@ -28,9 +28,16 @@ Read `AGENTS.md` first: its rules on balance, stopping, and Colab policy apply t
 
 Confirmed 2026-11-23 on an A100 (40 GB): the step 5 forward works as written (add `-o ExitOnForwardFailure=yes -o ServerAliveInterval=30`). ComfyUI was installed with `git clone --depth 1 https://github.com/comfyanonymous/ComfyUI && pip install -r requirements.txt` on the preinstalled torch, started with `python main.py --listen 127.0.0.1 --port 8188`, and loaded in about 1 minute. When the preferred GPU is busy (503), try the others in `GRANTED_GPUS`; the A100 here is the 40 GB model. `colab usage` can lag a few minutes behind actual spend.
 
+## Holding a GPU
+
+GPUs are often busy (503), so once one is assigned keep it between jobs and let the idle watchdog release it.
+`scripts/studio-up.sh <session> <recipe> <grab_min> <idle_min> <gpu...>` does grab -> setup -> forward :8188 -> `scripts/idle-stop.sh` (stops after N idle minutes; default plan is 60). Run it as an orb service.
+Colab allows one SSH connection per runtime (HTTP 429 otherwise): use `scripts/colab-ssh.sh <session> ...` for every ssh, which shares one ControlMaster connection with the port forward.
+aria2 must be given `out=<filename>` per URL, or Hugging Face redirects save files under hash names.
+
 ## Recipes
 
-Each recipe will live in `recipes/<name>/` with `remote.sh` (runs on the VM), `models.txt` (download list), and any workflow files. None are written yet; they are added after the first probe and port-forward test.
+Each recipe will live in `recipes/<name>/` with `remote.sh` (runs on the VM), `models.txt` (download list), and any workflow files. `recipes/minimax-h3/` is the first, with measured times and units in its README.
 
 | Area | First model | Licence | Notes |
 | --- | --- | --- | --- |
