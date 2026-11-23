@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Amp orb setup: everything lives in scripts/bootstrap.sh so other agents can run it too.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+bash scripts/bootstrap.sh

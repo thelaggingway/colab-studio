@@ -1,0 +1,3 @@
+outputs/
+.env
+*.token.json
