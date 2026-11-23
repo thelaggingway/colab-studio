@@ -6,6 +6,6 @@ On-demand Colab GPUs for video, image, music, speech, 3D, and model training, dr
 2. First time only: `scripts/login.sh`, then store `scripts/login.sh --export` as `COLAB_OAUTH_TOKEN_B64`
 3. `scripts/probe-gpus.sh`, then fill in `config/account.env`
 
-Rules for agents are in [AGENTS.md](AGENTS.md). Other machines and agents: [docs/other-systems.md](docs/other-systems.md).
+Rules for agents are in [AGENTS.md](AGENTS.md). Other machines and agents: [docs/other-systems.md](docs/other-systems.md). What to run on these GPUs: [docs/workflows.md](docs/workflows.md). Existing Colab notebooks, launchers and ComfyUI workflows to reuse: [docs/prior-art.md](docs/prior-art.md).
 
 `.agents/skills/colab-operator/SKILL.md` is copied from googlecolab/google-colab-cli (Apache-2.0, commit 0abf82d, 2026-11-18).
