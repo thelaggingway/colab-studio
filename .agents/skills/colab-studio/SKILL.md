@@ -38,6 +38,11 @@ colab sessions && colab usage                              # confirm, then repor
   the idle watchdog runs it before stopping the GPU (it needs `DRIVE_QUOTA_PROJECT`).
 - **ComfyUI's editor can be blank on a phone.** Use a laptop or direct `/view?filename=...` links.
 - **The balance lags a few minutes.** `Usage rate` is live; that is how the A100's 6.73/hr was measured.
+- **ComfyUI caches by inputs.** Same seed and same inputs return the old result in seconds; change the
+  seed per attempt. Switching models (H3 <-> LTX) reloads weights, about 2 minutes on A100.
+- **Upload images with `POST /upload/image`** (multipart field `image`) before referencing them in a
+  `LoadImage` node.
+- **A session started without `-s`** cannot be stopped with `colab stop`; stop it in the Colab web UI.
 - **Never wait for a GPU in a working conversation.** Run the grab as a service, or delegate it to a
   child thread that messages the parent on assignment and on completion.
 
@@ -60,12 +65,14 @@ and units, and L4/T4 measurements, in its README.
 
 | Area | First model | Licence | Notes |
 | --- | --- | --- | --- |
+| Draft -> fix | LTX-2.5 draft, H3 re-render from its frame (`recipes/draft-handoff/`) | both licences apply | ~0.8 units per fixed 10 s shot; give a last frame for products |
 | Video with sound | MiniMax H3 via ComfyUI | MiniMax community; excludes US, EU, UK, South Korea | About 24 GB peak in ComfyUI |
-| Video | Wan 2.2, LTX-2.5 | Apache 2.0 / LTX community | LTX needs 32 GB or more |
+| Video with sound | LTX-2.5 (`recipes/ltx-2.5/`) | LTX-2 community, gated | 10 s in ~60 s on A100; skips specific actions |
+| Video | Wan 2.2 | Apache 2.0 | |
 | Images | Z-Image Turbo, Qwen-Image-2512 | Apache 2.0 | |
 | Songs | ACE-Step 1.5 | MIT | Under 4 GB |
 | Speech to text | Qwen3-ASR 1.7B, Whisper large-v3-turbo | Apache / MIT | Batch jobs, no web UI needed |
-| Text to speech | Chatterbox, Qwen3-TTS | MIT / Apache | Clone only consenting voices |
+| Text to speech | Qwen3-TTS, Kokoro (Chatterbox retired upstream) | MIT / Apache | Clone only consenting voices |
 | Image to 3D | TRELLIS.2-4B | MIT | |
 | Fine-tuning | Unsloth Studio | Apache | |
 
