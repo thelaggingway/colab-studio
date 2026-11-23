@@ -26,7 +26,7 @@ Read `AGENTS.md` first: its rules on balance, stopping, and Colab policy apply t
 6. Collect results with `colab download -s <task> /content/output/<file> outputs/`.
 7. Stop: `colab stop -s <task>`, then `colab sessions` to confirm, then `colab usage` and report units used.
 
-The port forward in step 5 and the `root@colab` user are still to be confirmed on a live runtime; record what works here.
+Confirmed 2026-11-23 on an A100 (40 GB): the step 5 forward works as written (add `-o ExitOnForwardFailure=yes -o ServerAliveInterval=30`). ComfyUI was installed with `git clone --depth 1 https://github.com/comfyanonymous/ComfyUI && pip install -r requirements.txt` on the preinstalled torch, started with `python main.py --listen 127.0.0.1 --port 8188`, and loaded in about 1 minute. When the preferred GPU is busy (503), try the others in `GRANTED_GPUS`; the A100 here is the 40 GB model. `colab usage` can lag a few minutes behind actual spend.
 
 ## Recipes
 
