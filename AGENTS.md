@@ -13,10 +13,20 @@ This repo turns a Google account's Colab compute units into on-demand GPUs for c
 
 1. **Check the balance first** with `colab usage`. Do not start a GPU if the balance is below `MIN_BALANCE` in `config/account.env`.
 2. **Use the GPU from `config/account.env`** unless the task needs another one. Only the GPUs listed there as granted are known to work for this account; re-run `scripts/probe-gpus.sh` after any plan change.
-3. **Always name sessions** (`-s <name>`) and **always stop them** with `colab stop -s <name>` when the work ends, including after errors. Units are spent every minute a runtime exists. Before ending a turn, run `colab sessions` and confirm nothing you started is still running.
+3. **Always name sessions** (`-s <name>`). Units are spent every minute a runtime exists. A held GPU must have the idle watchdog running (see below); otherwise stop it with `colab stop -s <name>` when the work ends, including after errors. Before ending a turn, run `colab sessions` and say which sessions are still running and why.
 4. **Download model files on the Colab VM** (`aria2c` from Hugging Face into `/content`). Do not move model weights through this machine or Google Drive.
 5. **Copy results back** (`colab download`) into `outputs/` (git-ignored) before stopping; `/content` is erased when the runtime stops.
 6. **Report units used**: balance before and after, in the final message.
+
+## Getting a GPU (requisition)
+
+GPUs are often busy: `colab new` then fails with HTTP 503 for minutes to an hour. Never wait for one in a working conversation.
+
+1. **Start the grab in the background.** In an Amp orb: `amp orb service start studio-<name> --command 'bash scripts/studio-up.sh <name> <recipe> <grab_min> <idle_min> <gpu...>'`. It retries the GPUs in order, sets up the recipe, forwards port 8188, then runs `scripts/idle-stop.sh`, which stops the GPU after `<idle_min>` idle minutes (default plan: 60).
+2. **Hand the waiting to someone else.** An orchestrating agent delegates the grab-and-run to a child thread or subagent. The child sends the parent one message when the GPU is assigned and one when the job is done or failed, with time and units. Elsewhere (Claude Code, Codex, a terminal), run `studio-up.sh` with `nohup` or in tmux and check its log.
+3. **Hold, don't re-grab.** Once assigned, keep the session between jobs; the idle watchdog releases it. The watchdog only runs while its machine is up.
+4. **Fall back when it matters.** Order GPUs by need, for example `A100 G4` for MiniMax H3, `L4 T4` for small models. Record busy periods in the recipe README.
+5. **One SSH connection per runtime.** Colab answers HTTP 429 to a second `colab ssh`. Use `scripts/colab-ssh.sh <name> ...` for every SSH command; it shares one connection with the port forward.
 
 ## Colab policy (from the Colab FAQ)
 
@@ -35,6 +45,8 @@ This repo turns a Google account's Colab compute units into on-demand GPUs for c
 - `scripts/login.sh`: one-time sign-in and export of the login secret.
 - `scripts/probe-gpus.sh`: which GPUs this account can start; writes `probe-results/`.
 - `config/account.env`: account defaults that come from the probe.
+- `scripts/grab-gpu.sh`, `scripts/studio-up.sh`, `scripts/idle-stop.sh`, `scripts/colab-ssh.sh`: get, set up, hold and release a GPU.
+- `recipes/<name>/`: per-model setup (`models.txt`, `remote.sh`), workflow files, and measured times and units.
 - `.agents/skills/colab-operator/`: Google's skill for the Colab CLI (vendored; `colab skill` prints the latest).
 - `.agents/skills/colab-studio/`: how this repo runs a session, and the recipe index.
 - `.claude/skills` links to `.agents/skills` so Claude Code finds the same skills.
