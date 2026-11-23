@@ -15,10 +15,11 @@ child threads did the L4/T4 test, the runbook, the model research and the prior-
   restores it (confirmed in fresh orbs). It is the user's main Pro account; the user plans to revoke it
   later (myaccount.google.com > Security > Third-party connections). A new Amp project on this repo needs
   the same secret, plus `HF_TOKEN`, set on it.
-- **Hugging Face:** `HF_TOKEN` (account Yashj1996, fine-grained, gated-repo read on). Licence accepted for
+- **Hugging Face:** `HF_TOKEN` (the owner's Hugging Face account, fine-grained, gated-repo read on). Licence accepted for
   `Lightricks/LTX-2.5`. Other gated repos need the same one-time acceptance in the browser.
 - **Drive:** outputs save to `Colab Studio/outputs/<date>/<session>/` with `scripts/drive-save.sh`,
-  billed to Cloud project `green-syntax-515617-d9` (Drive API enabled). Today's 13 clips, contact sheets
+  billed to the owner's Cloud project (Drive API enabled), set as the Amp project env var
+  `DRIVE_QUOTA_PROJECT` on `yashj/colab-studio`, not in the repo. Today's 13 clips, contact sheets
   and comparisons are in `Colab Studio/outputs/2026-11-23/h3`.
 - **Merged on main:** runbook, hardened scripts, Drive saves, faster install (uv), H3 recipe with
   A100/L4/T4 numbers, LTX-2.5 recipe, model research (`docs/workflows.md`), prior art
