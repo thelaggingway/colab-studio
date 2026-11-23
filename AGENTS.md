@@ -9,6 +9,9 @@ recipe setup, ComfyUI, generate, collect, release, and the failure signatures wi
 
 ## Setup
 
+- Setting up for a new person or device: follow the README's "Set up" steps. `config/account.env` holds the
+  repo owner's GPU results and Drive project; another account must re-probe and set its own values.
+  Sign-in needs the human: run `scripts/login.sh` and ask them to open the link in their own browser.
 - Amp orbs run `.agents/setup`, which runs `scripts/bootstrap.sh`. Anywhere else, run
   `scripts/bootstrap.sh` yourself; `docs/other-systems.md` covers Claude Code, Codex, a laptop, and
   other machines.
