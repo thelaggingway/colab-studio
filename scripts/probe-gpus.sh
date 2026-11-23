@@ -4,12 +4,12 @@
 # and stops it at once. A refusal costs nothing; a granted runtime costs a few
 # minutes of units. Results go to probe-results/<date>.md.
 #
-# Usage: scripts/probe-gpus.sh [GPU ...]   (default: G4 H100 A100 L4 T4)
+# Usage: scripts/probe-gpus.sh [GPU ...]   (default: A100 G4 L4 T4 H100)
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
 gpus=("$@")
-[ ${#gpus[@]} -eq 0 ] && gpus=(G4 H100 A100 L4 T4)
+[ ${#gpus[@]} -eq 0 ] && gpus=(A100 G4 L4 T4 H100)
 
 # Busy GPUs answer HTTP 503 ("no capacity") rather than refusing; keep asking for a while.
 # The CLI doubles the wait after each retry, so 4 retries from 15 s is about 4 minutes per GPU.
@@ -43,7 +43,15 @@ for gpu in "${gpus[@]}"; do
 	else
 		# Keep plain text only (the CLI draws boxes around tracebacks) and the last useful line.
 		detail="$(LC_ALL=C tr -cd '\12\40-\176' <"$log" | grep -v '^[[:space:]]*$' | tail -1 | tr '|' ' ' | cut -c1-160)"
-		if grep -q -E '503|Service Unavailable' "$log"; then result="no capacity (503)"; else result="refused"; fi
+		if grep -q -E '503|Service Unavailable' "$log"; then
+			result="no capacity (503)"
+		elif grep -q -E 'precondition failed|HTTP 412' "$log"; then
+			result="refused (412: too many sessions)"
+		elif grep -q 'Backend rejected accelerator' "$log"; then
+			result="not entitled"
+		else
+			result="failed"
+		fi
 		echo "| $gpu | $result | | $detail |" >>"$out"
 	fi
 done

@@ -14,8 +14,9 @@ say() { printf '[bootstrap] %s\n' "$*" >&2; }
 if ! command -v uv >/dev/null 2>&1; then
 	say "installing uv"
 	curl -LsSf https://astral.sh/uv/install.sh | sh
-	export PATH="$HOME/.local/bin:$PATH"
 fi
+# uv installs tools into ~/.local/bin, which is not always on PATH yet.
+export PATH="$HOME/.local/bin:$PATH"
 
 # 2. The Colab CLI. keyrings.alt gives machines without an OS keyring (Linux
 # containers, orbs, CI) a file-based keyring for the login token.
@@ -62,4 +63,12 @@ if ! command -v aria2c >/dev/null 2>&1; then
 	fi
 fi
 
-say "done: $(colab version 2>/dev/null | head -1 || echo 'colab not on PATH; add ~/.local/bin')"
+say "installed: $(colab version 2>/dev/null | head -1 || echo 'colab not on PATH; add ~/.local/bin')"
+
+# 7. Confirm the login without spending units: `colab sessions` is read-only.
+if out="$(colab sessions </dev/null 2>&1)"; then
+	say "login ok: $(printf '%s' "$out" | LC_ALL=C tr -cd '\11\12\40-\176' | head -1)"
+else
+	say "login check failed: $(printf '%s' "$out" | LC_ALL=C tr -cd '\11\12\40-\176' | grep -v '^[[:space:]]*$' | tail -1)"
+	say "run scripts/login.sh once, then store its --export line as COLAB_OAUTH_TOKEN_B64 (docs/runbook.md step 1)"
+fi
