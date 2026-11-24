@@ -45,26 +45,39 @@ recipe setup, ComfyUI, generate, collect, release, and the failure signatures wi
    can render blank on a phone.
 6. **Report units used**: balance before and after, plus the usage rate and time held, in the final
    message.
+7. **Keep images out of an agent's context.** Look at an image only through `view_media` with an
+   objective that states what to check; never attach, paste, or re-read full-size images (contact
+   sheets, frames, screenshots) into the conversation. Two GPUs were lost on 2026-11-24 because a
+   holding thread crashed on `request body length limit exceeded` with contact sheets in its context.
+   A worker thread reports at each milestone instead: GPU assigned, job done or failed, GPU released.
 
 ## Getting a GPU (requisition)
 
 GPUs are often busy: `colab new` then fails with HTTP 503 for 10 to 30 minutes, which costs nothing.
 Never wait for one in a working conversation.
 
-1. **Start the grab in the background.** In an Amp orb:
+1. **Ask the machine that holds GPUs.** The always-on server (`lucky-fox`, runner
+   `agent-hostuplarge`) runs the holder service. From a thread on that server (executor `runner`,
+   runner `agent-hostuplarge`, working directory this repo), `scripts/gpu-request.sh <session>
+   <recipe> <grab_min> <idle_min> <gpu...>` returns at once and the grab happens in systemd, so the
+   GPU outlives this thread, a logout, and a reboot. Watch it with `scripts/gpu-status.sh`; see
+   `docs/gpu-holder.md`, including how a thread on another machine submits work to it.
+   Do not also run `studio-up.sh` in an orb for the same account: two holders fight over one GPU, and
+   the orb one loses the GPU when its thread pauses.
+2. **If you must hold it yourself** (no holder on that machine): in an Amp orb,
    `amp orb service start studio-<name> --command 'bash scripts/studio-up.sh <name> <recipe> <grab_min> <idle_min> <gpu...>'`.
    It retries the GPUs in order, sets up the recipe, forwards port 8188, then runs
    `scripts/idle-stop.sh`, which stops the GPU after `<idle_min>` idle minutes (default plan: 60).
    Watch it with `amp orb service logs -n 20 studio-<name>` from the repo root; look for `GOT=A100`.
-2. **Hand the waiting to someone else.** An orchestrating agent delegates the grab-and-run to a child
+3. **Hand the waiting to someone else.** An orchestrating agent delegates the grab-and-run to a child
    thread or subagent. The child sends the parent one message when the GPU is assigned and one when the
    job is done or failed, with time and units. Elsewhere (Claude Code, Codex, a terminal), run
    `studio-up.sh` with `nohup` or in tmux and check its log.
-3. **Hold, don't re-grab.** Once assigned, keep the session between jobs; the idle watchdog releases
-   it. The watchdog only runs while its machine is up.
-4. **Fall back when it matters.** Order GPUs by need, for example `A100 G4 L4` for MiniMax H3,
+4. **Hold, don't re-grab.** Once assigned, keep the session between jobs; the idle watchdog releases
+   it. The watchdog only runs while its machine is up, which is why the holder runs on the server.
+5. **Fall back when it matters.** Order GPUs by need, for example `A100 G4 L4` for MiniMax H3,
    `L4 T4` for small models. Record busy periods in the recipe README.
-5. **One SSH connection per runtime.** Colab answers HTTP 429 to a second `colab ssh`. Use
+6. **One SSH connection per runtime.** Colab answers HTTP 429 to a second `colab ssh`. Use
    `scripts/colab-ssh.sh <name> ...` for every SSH command; it shares one connection with the port
    forward.
 
@@ -94,6 +107,7 @@ many sessions or a temporary limit. 400 `Backend rejected accelerator` = not ent
 ## Layout
 
 - `docs/next-steps.md`: current state, measured numbers, remaining work and working agreements. Read first when continuing.
+- `docs/gpu-holder.md`: the GPU holder on the always-on server: design, setup, status, alerting, failure modes, and how an agent thread submits work to it.
 - `docs/runbook.md`: the end-to-end procedure, expected output per step, per-GPU notes, failure fixes.
 - `docs/other-systems.md`: Claude Code, Codex, a laptop, another VM.
 - `docs/amp-runner-on-colab.md`: an Amp runner on the Colab VM itself (Amp only), trade-offs and cleanup.
@@ -107,6 +121,9 @@ many sessions or a temporary limit. 400 `Backend rejected accelerator` = not ent
 - `config/account.env`: account defaults, GPU choices, rates, and `MIN_BALANCE`.
 - `scripts/grab-gpu.sh`, `scripts/studio-up.sh`, `scripts/idle-stop.sh`, `scripts/colab-ssh.sh`: get a
   GPU, set it up, hold it, release it, and share one SSH connection.
+- `scripts/gpu-holder.sh`, `scripts/gpu-request.sh`, `scripts/gpu-release.sh`, `scripts/gpu-status.sh`,
+  `scripts/gpu-monitor.sh`, `scripts/port-forward.sh`, `config/systemd/`: hold a GPU from the server as
+  a systemd service, with status and alerting (`docs/gpu-holder.md`).
 - `scripts/drive-save.sh`, `scripts/drive_save.py`: copy a session's outputs to Google Drive.
 - `recipes/draft-handoff/`: draft with LTX-2.5, re-render shots that miss the action with H3 from the draft's frame (`handoff.py`).
 - `recipes/<name>/`: per-model setup (`models.txt`, `remote.sh`), workflow files, and measured times

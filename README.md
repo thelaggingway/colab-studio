@@ -42,6 +42,7 @@ In an Amp project on this repo, steps 1-2 happen automatically (`.agents/setup`)
 | --- | --- |
 | [AGENTS.md](AGENTS.md) | Rules every agent follows: balance floor, always release GPUs, Colab policy, secrets |
 | [docs/runbook.md](docs/runbook.md) | The step-by-step session procedure and failure table |
+| [docs/gpu-holder.md](docs/gpu-holder.md) | Holding a GPU from an always-on server: a systemd service, status, alerts, and how other agent threads submit work to it |
 | [docs/next-steps.md](docs/next-steps.md) | Current state, measured numbers, remaining work. Start here when continuing earlier work |
 | [docs/workflows.md](docs/workflows.md) | Which models fit A100, L4 and T4, area by area |
 | [docs/amp-runner-on-colab.md](docs/amp-runner-on-colab.md) | Amp only: running an Amp runner on the Colab VM itself, measured setup, trade-offs, cleanup |

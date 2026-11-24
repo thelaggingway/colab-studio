@@ -4,7 +4,10 @@
 # Usage: scripts/idle-stop.sh <session> [idle_minutes=60] [comfy_url=http://127.0.0.1:8188]
 # In an Amp orb run it as a supervised service so it survives CLI restarts:
 #   amp orb service start idle-stop-<session> --command 'bash scripts/idle-stop.sh <session> 60'
-# Caveat: it only runs while this machine is up. If the orb is paused or killed, it cannot
+# On a machine that holds the GPU itself, scripts/gpu-holder.sh runs it under systemd (docs/gpu-holder.md).
+# It writes the idle count to $COLAB_STUDIO_STATE/idle for scripts/gpu-status.sh, and a timestamp to
+# .../released when it stops the session, so the holder knows the hold is finished.
+# Caveat: it only runs while this machine is up. If the machine is paused or killed, it cannot
 # stop the GPU; Colab's own idle timeout is the backstop. Stop the GPU by hand when the work ends.
 set -u
 if [ $# -lt 1 ]; then
@@ -13,6 +16,8 @@ if [ $# -lt 1 ]; then
 fi
 session="$1"; minutes="${2:-60}"; url="${3:-http://127.0.0.1:8188}"
 here="$(cd "$(dirname "$0")/.." && pwd)"
+state="${COLAB_STUDIO_STATE:-$HOME/.local/state/colab-studio}"
+mkdir -p "$state"
 last_active=$(date +%s); last_hist=""
 while :; do
   q=$(curl -s -m 10 "$url/queue" 2>/dev/null)
@@ -27,6 +32,9 @@ except Exception: print(0)')
   last_hist="$hist"
   idle=$(( ($(date +%s) - last_active) / 60 ))
   echo "$(date -u +%T) busy=$busy idle=${idle}m"
+  # Atomic: scripts/gpu-status.sh reads this file and must never see half a line.
+  printf 'busy=%s idle=%s ts=%s\n' "$busy" "$idle" "$(date +%s)" >"$state/idle.tmp" &&
+    mv "$state/idle.tmp" "$state/idle"
   if [ "$idle" -ge "$minutes" ]; then
     echo "idle for ${idle}m, stopping $session"
     # Save finished outputs to Drive before the runtime, and /content, go away. Skipped when
@@ -41,6 +49,7 @@ except Exception: print(0)')
     if colab stop -s "$session" </dev/null; then
       colab sessions </dev/null || true
       colab usage </dev/null | LC_ALL=C tr -cd '\11\12\40-\176' | head -2 || true
+      printf '%s\n' "$(date -u +%FT%TZ)" >"$state/released"
       exit 0
     fi
     echo "colab stop failed; stop it by hand: colab stop -s $session" >&2

@@ -14,12 +14,18 @@ to every session. This file is the short version and the recipe index.
 ```bash
 bash scripts/bootstrap.sh                                  # once per machine; restores and checks the login
 source config/account.env && colab usage                   # read-only; stop if below MIN_BALANCE
-amp orb service start studio-h3 --command 'bash scripts/studio-up.sh h3 minimax-h3 60 60 A100 G4'
-amp orb service logs -n 20 studio-h3                       # GOT=A100, then "comfyui reachable"
-amp orb portal 8188 --title 'ComfyUI'                      # give the printed URL to the user
-colab stop -s h3; amp orb service stop studio-h3          # or let idle-stop release it
+bash scripts/gpu-request.sh h3 minimax-h3 60 60 A100 G4    # the holder machine; returns at once
+bash scripts/gpu-status.sh                                 # phase=grabbing, then phase=holding
+curl -s http://127.0.0.1:8188/system_stats                 # ComfyUI, on the holder machine
+bash scripts/gpu-release.sh h3                             # or let the watchdog release it
 colab sessions && colab usage                              # confirm, then report units
 ```
+
+The holder (systemd on the always-on server) is the default: the GPU outlives this thread, a logout
+and a reboot, and a monitor alerts if it is lost. Design and the way an orb submits work to it:
+[`docs/gpu-holder.md`](../../../docs/gpu-holder.md). On a machine without the holder, run
+`amp orb service start studio-h3 --command 'bash scripts/studio-up.sh h3 minimax-h3 60 60 A100 G4'`
+instead, as `docs/runbook.md` step 3 describes.
 
 ## What wastes time, in one list
 

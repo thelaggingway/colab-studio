@@ -67,7 +67,9 @@ The steps in `docs/runbook.md` work as written, with three differences:
   tail -f /tmp/studio-h3.log        # "GOT=A100", then "comfyui reachable"
   ```
   `nohup` and tmux are the right tool here; inside an Amp orb they are not (the orb's supervised
-  services are).
+  services are). On an always-on machine, prefer the holder instead: `scripts/gpu-holder-install.sh`
+  once, then `scripts/gpu-request.sh`, so the GPU outlives the shell, a logout and a reboot
+  ([gpu-holder.md](gpu-holder.md)).
 - **No watchdog if the machine sleeps.** `scripts/idle-stop.sh` runs on that machine, so a laptop that
   suspends cannot stop the GPU. Stop it yourself with `colab stop -s <name>` when the work ends.
 

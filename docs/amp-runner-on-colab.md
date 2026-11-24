@@ -59,6 +59,10 @@ Flags worth adding:
 
 ## Measured on the T4 (2026-11-24)
 
+The whole session ran from **08:25 to 10:21 UTC**, about **2.2 units at 1.15 units/hour**. It was
+stopped deliberately by a scheduled cleanup, not by Colab: the runtime never dropped on its own while
+the runner was up.
+
 A runner thread did the full setup on the VM itself, with no SSH, in 2 min 48 s:
 
 | Step | Time | Notes |
@@ -113,11 +117,16 @@ When the work ends, the thread is archived, or the owner says so:
 ## Open question: does an idle runner keep the GPU alive?
 
 Colab says sessions stay alive while the kernel is active. The runner is a separate process, so Colab
-may still treat the runtime as idle and reclaim it. Observed so far: a GPU stayed up while a thread was
-working on it, and was reclaimed about 20 minutes after the orb driving it paused.
+may still treat the runtime as idle and reclaim it. Observed so far:
 
-Idle test: not run. The T4 was kept busy with other tests (a ComfyUI image test and ACE-Step song
-generation) for the whole session, so this is still open.
+- A GPU stayed up while a thread was working on it, and was reclaimed about 20 minutes after the orb
+  driving it paused.
+- On 2026-11-24 the T4 stayed up for the whole 08:25 to 10:21 UTC session, including **about 55
+  minutes with no job running (08:46 to 09:41)**. That is not proof that an idle runner holds the GPU:
+  the orb kept running `colab` commands against the session throughout (status, sessions, usage), so
+  the runtime was never left alone for the 20 minutes that a reclaim takes.
 
-If the runner alone does not keep the runtime, try starting it from inside the kernel (a long-running
-`colab exec` cell) so the kernel stays busy.
+So the question is still open. To answer it, leave a runner-only session completely untouched for 30
+minutes and watch `colab sessions` from another machine. Until then, treat the GPU as something that
+must be held by a machine that stays up, not by a runner alone; `docs/gpu-holder.md` is that machine.
+
