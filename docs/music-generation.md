@@ -1,19 +1,38 @@
-# Song generation: ACE-Step 1.5 vs Suno vs ElevenLabs
+# Song generation: ACE-Step 1.5 vs Suno vs ElevenLabs (decision: Suno)
 
 What we learned on 2026-11-24 when we gave two existing songs to three generators. We gave each one the
 lyrics and the written style brief only, never the original audio. The songs were "Just as Sure"
 (intimate indie alt-pop, 100 BPM, female vocal) and "The Arrow" (dark acoustic ballad, 92 BPM, baritone,
 no percussion until the final chorus). Suno made the originals.
 
-## Short version
+## Decision (2026-11-24): use Suno; music generation in this repo is dropped
 
-- **Suno** is still the reference for production quality and for following a detailed style brief.
-- **ElevenLabs** sang every lyric. In a first-pass listen it rated about 6/10. That test used the
-  *oldest* model (`music_v1`) with no audio reference and no finetune, so it is a floor, not a verdict.
-  Re-test on `music_v2_5` before deciding (see "ElevenLabs: what we did not use yet").
-- **ACE-Step 1.5 turbo** (open weights, runs on a free-tier-class T4) gave exact length, BPM and key with
-  clear vocals. It was weak at following a production brief, and lyric completeness depended on the seed.
-  It is the only option that can be fine-tuned on your own audio without a vendor's rules.
+After four rounds (ACE-Step turbo, ElevenLabs `music_v1`, ElevenLabs `music_v2_5`, full ACE-Step XL), the
+owner judged **Suno clearly better on every song** and stopped the other experiments. Suno Pro is the
+platform for songs. Nothing in this repo generates music any more; the notes below are kept so nobody
+repeats the tests without a reason.
+
+What did not move the verdict, so do not expect it to:
+
+- **Metrics.** ACE-Step XL hit every lyric line, exact length and tempo, and the drum brief on one seed,
+  and an automated listen rated ElevenLabs v2.5 about 9/10. The owner still heard both as worse than Suno,
+  and ACE round 2 as *worse than round 1*. Tempo, lyric counts and model "listens" do not measure what
+  makes a song good; only a human listen against the Suno take decides.
+- **More model.** ACE-Step's full XL model at 50 steps with the 4B planner sounded worse to the owner than
+  the 8-step turbo, despite better structure.
+- **More control.** ElevenLabs' per-section styles fixed brief adherence but not the overall feel.
+
+Reopen only if a new model release claims to beat Suno on vocals and production, and test it with one
+song and one human listen before building anything.
+
+## Short version (per generator)
+
+- **Suno** is the reference for production quality and for following a detailed style brief.
+- **ElevenLabs** sang every lyric. `music_v1` rated about 6/10; `music_v2_5` with per-section styles
+  followed the brief (The Arrow kept drums out until the final chorus) but still lost to Suno by ear.
+- **ACE-Step 1.5** (open weights) gave exact length, BPM and key with clear vocals. Turbo on a T4 was weak
+  at following a production brief and lyric completeness depended on the seed; XL on an A100 fixed the
+  lyrics but sounded worse. It is the only option that could be fine-tuned on your own audio.
 
 ## ACE-Step 1.5 on a Colab T4
 
@@ -47,9 +66,29 @@ Lessons:
 - Generate at least two seeds and listen for missing verses before you pick one.
 - Peaks can reach 0 dBFS; normalise (for example to -14 LUFS, -1 dBTP) before publishing.
 
-Not tried yet ("round 2", planned for an A100): the larger ACE-Step model, more steps than turbo's 8, the
-LM planner for structure, and repaint/edit of single sections. A LoRA on your own recordings is possible
-in principle, but only with audio you own (see Terms).
+## ACE-Step 1.5 XL on an A100 ("round 2")
+
+Setup: ComfyUI, the full (non-turbo) XL base in bf16, the 4B Qwen LM planner on (`generate_audio_codes`),
+50 steps, cfg 6, exact duration/BPM/key, the caption = the style text with instrumentation moved first and
+trimmed, lyrics verbatim. Two seeds a song. Weights about 20 GB, pulled on the VM.
+
+| Take | Length | Tempo (target) | Lyric lines heard | True peak | Time |
+| --- | --- | --- | --- | --- | --- |
+| Just as Sure 4101 | 177.0 s | 99.4 (100) | 57/57 | +1.3 dBFS | 101 s (incl. load) |
+| Just as Sure 4102 | 177.0 s | 99.4 | 57/57 | +0.9 | 34 s |
+| The Arrow 4101 | 213.0 s | 92.3 (92) | 61/61 | +1.2 | 43 s |
+| The Arrow 4102 | 213.0 s | 92.3 | 61/61 | +1.0 | 43 s |
+
+- Lyrics complete on every take (faster-whisper small.en, word overlap per line); round 1's garbled
+  couplet was gone.
+- The Arrow 4102 kept percussion out until the final chorus (enters 2:38); 4101 had a muted kick under
+  choruses 1 and 2. Judged by an audio-description model plus band-energy onsets, not by ear.
+- Every take clipped (+0.9 to +1.3 dBFS true peak, about −11.5 LUFS).
+- Tempo detection needs a prior near the target: librosa's default read one take as 136 BPM.
+- No repaint: ComfyUI's 1.5 graphs have no section-edit node; the official pipeline has one but needs its
+  own install.
+- Cost: 1.66 units including the weight pull; generation itself was 0.06–0.19 units a take.
+- **Owner's verdict: worse than round 1, and far from Suno.** This ended the ACE-Step experiments.
 
 ## ElevenLabs Music
 
@@ -57,6 +96,13 @@ How we called it: the `POST /v1/music` API with a `composition_plan` built from 
 section per `[Section]` tag, the lines and their cue went in as local styles, and the brief went in as
 global styles. Section lengths were weighted by line count, then scaled to the original song's length.
 Output was MP3 at 44.1 kHz, 128 kbps, the Starter plan's maximum.
+
+Re-test on `music_v2_5` (2026-11-24): both songs, two seeds each, plans rebuilt as v2.5 `chunks` with the
+instrumentation in each chunk's positive styles and the forbidden elements (for example percussion in The
+Arrow's verses) in its negative styles. Four takes cost 9,748 credits; the Starter plan allows only two
+requests at a time. The Arrow kept drums out until the final chorus and an automated listen rated the
+takes about 9/10, but the owner still preferred Suno, and the ElevenLabs music tests stopped there.
+Audio Reference and finetunes were never tried (a finetune needs a higher plan than Starter).
 
 ### ElevenLabs: what we did not use yet
 
@@ -101,12 +147,8 @@ The full research, with quotes and dates, is in the thread's terms artifact. In 
 
 Neither service's audio can train a LoRA or a finetune. Train only on recordings you own.
 
-## Next test, if ElevenLabs is the candidate
+## Not pursued
 
-1. Rebuild the two plans in the v2.5 chunk format. Put the instrumentation in each chunk's positive styles
-   and the forbidden elements in its negative styles.
-2. Generate both songs on `music_v2_5` with two seeds each, at the same lengths.
-3. In the app, add an Audio Reference that we own (a self-made 30 s sketch, not the Suno track), and try
-   "Golden Hour Indie Guitar" on The Arrow.
-4. Inpaint only the weakest section of the best take instead of re-rolling.
-5. Compare against Suno in the same `songs-compare` format (one MP4 per take with a waveform).
+Steps 1–2 of the old ElevenLabs plan (v2.5 chunks, two seeds a song) were run, above. The rest (an
+owned Audio Reference, a curated or custom finetune, inpainting the weakest section) were dropped with
+the decision to stay on Suno. ElevenLabs is still used for voiceovers (TTS), which is a separate product.

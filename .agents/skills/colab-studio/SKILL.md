@@ -76,7 +76,7 @@ and units, and L4/T4 measurements, in its README.
 | Video with sound | LTX-2.5 (`recipes/ltx-2.5/`) | LTX-2 community, gated | 10 s in ~60 s on A100; skips specific actions |
 | Video | Wan 2.2 | Apache 2.0 | |
 | Images | Z-Image Turbo, Qwen-Image-2512 | Apache 2.0 | |
-| Songs | ACE-Step 1.5 | MIT | Under 4 GB |
+| Songs | Dropped: songs come from Suno | | See `docs/music-generation.md` |
 | Speech to text | Qwen3-ASR 1.7B, Whisper large-v3-turbo | Apache / MIT | Batch jobs, no web UI needed |
 | Text to speech | Qwen3-TTS, Kokoro (Chatterbox retired upstream) | MIT / Apache | Clone only consenting voices |
 | Image to 3D | TRELLIS.2-4B | MIT | |
