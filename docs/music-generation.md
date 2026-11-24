@@ -71,14 +71,17 @@ current options, from ElevenLabs' docs as of 2026-11-24:
 | Per-chunk styles | `positive_styles`, `negative_styles` and `context_adherence` on each generation chunk | API, v2/v2.5 | Use negatives per section ("percussion" in verse 1 of The Arrow) |
 | `seed` | Repeatable takes (not guaranteed across updates) | API, plan-based calls only | |
 | Curated Finetunes | 11 pre-trained styles, for example Golden Hour Indie Guitar, 80s Nu-Disco Revival, Mozart-Style Symphony | App | None matches these two songs closely; "Golden Hour Indie Guitar" is the nearest for The Arrow |
-| Custom Finetunes | Train on up to 50 of your own tracks (10 s to 10 min each, at most 250 min total), ready in 5-10 min | App only; API is Enterprise on request (`finetune_id` exists in the API) | Shapes sound, not structure. Uploads are screened, and a rejected finetune is not refunded |
+| Custom Finetunes | Train on up to 50 of your own tracks (10 s to 10 min each, at most 250 min total), ready in 5-10 min | App (Music > Finetunes) and API: `POST /v1/music/finetunes` to create, `GET /v1/music/finetunes` to list, then `finetune_id` on any compose call | Shapes sound, not structure. Uploads are screened, and a rejected finetune is not refunded. Each finetune is private to its creator unless shared to the workspace |
 
 There is no "voice type" finetune separate from music finetunes. A custom finetune learns a vocal style
 only if the uploaded tracks contain vocals. The Music docs we read offer no way to pick a cloned speech
 voice (the kind used for voiceovers) as the singer. Describe the singer in the prompt or styles instead.
 
-The plan tiers that can create *custom* finetunes are not stated on the docs pages we read. Check the
-Finetunes page in the app before relying on Starter or Creator.
+Which plans can create custom finetunes, and how many, is not settled by the sources we found
+(2026-11-24). ElevenLabs' launch post (March 2026) says "Available to Creator+ subscribers". A third-party
+guide from November 2026 says the pricing table lists them from Starter, and that the API charges $1.50 per
+finetune. Neither the docs nor the pricing page we read gives a per-plan count. Check the Finetunes page in
+the app, or `GET /v1/music/finetunes`, before paying for an upgrade for this.
 
 What can go into a custom finetune: only audio you fully own that carries no third-party copyright. Suno
 output is ruled out twice. Suno's terms forbid using its output to train other models, and ElevenLabs'
