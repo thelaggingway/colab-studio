@@ -44,6 +44,9 @@ In an Amp project on this repo, steps 1-2 happen automatically (`.agents/setup`)
 | [docs/runbook.md](docs/runbook.md) | The step-by-step session procedure and failure table |
 | [docs/next-steps.md](docs/next-steps.md) | Current state, measured numbers, remaining work. Start here when continuing earlier work |
 | [docs/workflows.md](docs/workflows.md) | Which models fit A100, L4 and T4, area by area |
+| [docs/amp-runner-on-colab.md](docs/amp-runner-on-colab.md) | Amp only: running an Amp runner on the Colab VM itself, measured setup, trade-offs, cleanup |
+| [docs/music-generation.md](docs/music-generation.md) | Song generation compared: ACE-Step 1.5 on a T4, Suno, ElevenLabs Music controls and finetunes, terms |
+| [docs/ad-production.md](docs/ad-production.md) | Making short ads with video models: what worked for Storm Surge and GATOR-NOPE, and `scripts/assemble-ad.sh` |
 | [docs/prior-art.md](docs/prior-art.md) | Existing Colab notebooks, launchers and ComfyUI workflows worth reusing |
 | `recipes/` | Ready recipes with measured time and units: `minimax-h3`, `ltx-2.5`, `draft-handoff` |
 | `.agents/skills/` | Agent skills (`colab-studio`, Google's `colab-operator`); `.claude/skills` links here |
