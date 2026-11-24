@@ -111,7 +111,7 @@ many sessions or a temporary limit. 400 `Backend rejected accelerator` = not ent
 - `docs/runbook.md`: the end-to-end procedure, expected output per step, per-GPU notes, failure fixes.
 - `docs/other-systems.md`: Claude Code, Codex, a laptop, another VM.
 - `docs/amp-runner-on-colab.md`: an Amp runner on the Colab VM itself (Amp only), trade-offs and cleanup.
-- `docs/music-generation.md`: song generation compared (ACE-Step 1.5, Suno, ElevenLabs Music), settings, controls, terms.
+- `docs/music-generation.md`: song generation compared (ACE-Step 1.5, Suno, ElevenLabs Music), results, terms; decision: songs come from Suno, music work here is dropped.
 - `docs/ad-production.md`: making short ads with video models: one shot per clip, voiceover as the clock, locked frames, mix and end card.
 - `scripts/assemble-ad.sh`: cut clips under one voiceover, duck the bed, fade in an end card, normalise loudness.
 - `docs/workflows.md`: which models and workflows fit which GPU, area by area.

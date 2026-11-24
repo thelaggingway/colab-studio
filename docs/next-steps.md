@@ -14,7 +14,13 @@ child threads did the L4/T4 test, the runbook, the model research and the prior-
 - **Three GPUs were lost that day** because the holder lived inside an agent orb: one orb paused after
   an idle turn, and two crashed on `request body length limit exceeded` with contact sheets in context.
   Hence the rule in `AGENTS.md` rule 7: images only through `view_media` with an objective.
-- Still owed: one short T4 end-to-end test of the holder (grab, setup, a job, watchdog release).
+- Still owed: one short T4 end-to-end test of the holder (grab, setup, a job, watchdog release), and an
+  alert channel (an ntfy topic in `~/.config/colab-studio/alerts.env` on the server; until then alerts
+  only reach `~/.local/state/colab-studio/monitor.log`).
+- **Ads v3 are done:** one locked hero per ad fixed the character changes; lessons and remaining nits in
+  `docs/ad-production.md`. A100 session 12:59–14:20 UTC, 8.96 units for the ads and ACE round 2.
+- **Music is dropped.** The owner chose Suno after ACE-Step (turbo and XL) and ElevenLabs (v1 and v2.5)
+  all lost by ear; see the decision in `docs/music-generation.md`. Do not start music work without asking.
 
 ## State on 2026-11-23 (end of day, UTC)
 
@@ -59,7 +65,7 @@ Two sessions (A100 + L4) can run at once.
 | 2 | Measure the trimmed install on a real run | any GPU | `remote.sh` prints clone/apt/download/pip seconds; record them in the runbook |
 | 3 | LTX-2.5 on L4 | L4 | L4 VM has 52 GB RAM, enough for the int8 files on paper; untested |
 | 4 | `z-image` recipe (images) | L4 | Official template `image_z_image_turbo`; mostly assembly per `docs/prior-art.md` |
-| 5 | `ace-step` recipe (songs) | T4/L4 | Official `acestep-api` or the ComfyUI template |
+| 5 | ~~`ace-step` recipe (songs)~~ | dropped | Tested turbo and XL; the owner chose Suno. See `docs/music-generation.md` |
 | 6 | `speech` recipe (ASR + TTS batch) | T4/L4 | `qwen-asr`, `qwen-tts`; never on A100 (rate) |
 | 7 | `upscale` recipe (SeedVR2 to 1080p) | L4 | Finishes H3/LTX clips; step 5 of the hand-off workflow |
 | 8 | `wan-5b` recipe | L4 | Apache 2.0 fallback with no territory limits |

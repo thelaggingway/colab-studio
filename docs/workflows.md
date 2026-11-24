@@ -116,6 +116,9 @@ Measured: 7B fp8 took 451 frames of 640×480 to 1440×1080 in 9.0 min at 0.83 fp
 
 ## Music and songs
 
+> **Dropped (2026-11-24):** after testing ACE-Step 1.5 turbo and XL against Suno, the owner chose Suno
+> for songs; see `docs/music-generation.md`. The notes below are the original research, kept for reference.
+
 **ACE-Step 1.5** (2B turbo / 4B XL, MIT) is the clear pick: full songs with vocals, 10 s to 10 min, 50+ languages, under 4 GB VRAM for the 2B turbo and 12-20 GB for XL, "under 2 s per full song on an A100 and under 10 s on an RTX 3090" †. ComfyUI has an AIO checkpoint template.
 
 | File | Repo | Size † |

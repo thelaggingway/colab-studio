@@ -46,10 +46,20 @@ What worked:
   laid over a locked-off shot in post.
 - **Pre-placed first frames removed the pop-ins** in the float-by shot.
 
-What didn't work yet: **character continuity.** Only the shots that got a still were locked, so each ad
-still has three or four different men in similar shirts. The fix is the same technique applied to every
-shot: make one reference image of the hero, derive each shot's first frame from it with painter, and hand
-each to H3.
+**Character continuity: lock one hero per ad, on every shot he appears in (v3, verified).** In v2 only
+the product shots got a still, so each ad had three or four different men in similar shirts. For v3:
+
+- Make **one** reference image of the hero with painter, then derive every shot's first frame from that
+  same image ("same man, same clothes; change only the pose and setting"). Never generate a hero shot
+  from text alone.
+- Render **every shot that shows the hero on H3** from its still, including shots that were LTX in v2
+  (GATOR-NOPE's grill shot). LTX is left only for shots with no hero (Storm Surge's wide suburb).
+- Result: the same man in every Storm Surge shot that shows a face, and the same dad in every GATOR-NOPE
+  shot. H3 held the handed first frame closely (first-frame SSIM 0.87–0.95).
+- **Anything not locked still drifts.** The alligator was not given its own reference and kept its
+  colours but changed build from shot to shot (broad and low, then slim and upright, then small). If a
+  second character matters, give it a reference image too and derive its shots from that.
+- Render two seeds per shot and pick by eye: one seed grew the hero a blue cap.
 
 ## Which model for which shot
 
@@ -125,5 +135,17 @@ place (2.95) → H3 sunrise with the end card (3.75). Voice gain 2.0, 0.3 s in, 
 H3 can up, one spray, alligator recoils (5.6) → LTX product shot from 1.45 s, with the end card (4.45).
 Voice gain 1.2, 0.2 s in, card at 13.6 s.
 
-Still open on both: different characters from shot to shot (fix above), Storm Surge's foam still morphs
-at the crack, and GATOR-NOPE's alligator never winks in the product shot.
+**v3 (2026-11-24, the keepers):** the same shot list, timings, voiceovers, gains and cards as v2, with
+every hero shot re-rendered on H3 from one locked hero still per ad, two seeds a shot (22 clips).
+Storm Surge v3: LTX wide (s1-wide, the only shot with no hero) and H3 for the other six. GATOR-NOPE v3:
+all four shots on H3. Loudness: Storm Surge −17.1 LUFS / −1.5 dBTP, GATOR-NOPE −16.4 LUFS / −2.8 dBTP.
+Cost: 7.30 units on an A100 (about 5.6 for the clips and H3 setup, 1.2 for weight pulls, 0.1 for one
+duplicate clip after a service restart). The owner judged both clearly better than v2.
+
+Still open after v3 (none blocks using the ads):
+
+- Storm Surge: the jet ski barely drifts in the can-raised shot; the wide opener has rain and lightning
+  but no clear flood water or flamingos; "That's just a suggestion" sits only +1.6 dB over the ducked
+  bed (raise that line's gain or duck deeper under it).
+- GATOR-NOPE: the spray reads as a streak and there is no sniff or thumbs-up; the product-shot wink never
+  shows; the alligator's build drifts (no reference of its own).
