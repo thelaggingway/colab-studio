@@ -4,6 +4,18 @@ Read this first when continuing Colab Studio in a new thread. The founding threa
 https://ampcode.com/threads/T-01a20790-6b8b-7709-9a3b-e71bb27b5c86 (use read_thread for detail); its
 child threads did the L4/T4 test, the runbook, the model research and the prior-art search.
 
+## State on 2026-11-24
+
+- **The GPU holder exists.** The always-on server (`lucky-fox`, runner `agent-hostuplarge`) holds a
+  Colab GPU as a systemd `--user` service, so it survives the agent thread, a logout and a reboot; a
+  timer checks it every 5 minutes and alerts on a lost GPU, a dead holder, and spend over a cap.
+  `scripts/gpu-status.sh` is the one-line status. Design, setup, failure modes and how an agent thread
+  submits work: `docs/gpu-holder.md`.
+- **Three GPUs were lost that day** because the holder lived inside an agent orb: one orb paused after
+  an idle turn, and two crashed on `request body length limit exceeded` with contact sheets in context.
+  Hence the rule in `AGENTS.md` rule 7: images only through `view_media` with an objective.
+- Still owed: one short T4 end-to-end test of the holder (grab, setup, a job, watchdog release).
+
 ## State on 2026-11-23 (end of day, UTC)
 
 - **Account:** Google AI Pro, 200 compute units/month. Balance 174.42 after all of today's work.
@@ -52,7 +64,7 @@ Two sessions (A100 + L4) can run at once.
 | 7 | `upscale` recipe (SeedVR2 to 1080p) | L4 | Finishes H3/LTX clips; step 5 of the hand-off workflow |
 | 8 | `wan-5b` recipe | L4 | Apache 2.0 fallback with no territory limits |
 | 9 | Chained 45 s video like the X post (4 shots, last frame -> next first frame, upscale) | A100 or G4 | Needs 1 and 7 |
-| 10 | Re-grab after an orb restart | none | `studio-up.sh` parks after release, but a service restart after an orb pause re-runs it and grabs a new GPU. Fix: a marker in a persistent path cleared on intentional start, or stop the service after release |
+| 10 | ~~Re-grab after an orb restart~~ | done | Solved by the holder: `scripts/gpu-holder.sh` runs under systemd on the server, adopts an existing session instead of re-grabbing, and the monitor restarts it when the GPU is lost. See `docs/gpu-holder.md` |
 | 11 | Retry G4 at another time of day | G4 | Entitled; never assigned so far |
 | 12 | After a plan change (for example Ultra) | user | Re-login (`scripts/login.sh`), update the secret, re-run `scripts/probe-gpus.sh`, update `config/account.env` |
 

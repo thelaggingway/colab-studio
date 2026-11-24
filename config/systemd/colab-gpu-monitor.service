@@ -1,0 +1,7 @@
+[Unit]
+Description=Colab Studio GPU monitor (lost GPU, dead holder, spend over a cap)
+
+[Service]
+Type=oneshot
+WorkingDirectory=@REPO@
+ExecStart=/usr/bin/env bash @REPO@/scripts/gpu-monitor.sh

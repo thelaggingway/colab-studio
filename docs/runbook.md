@@ -10,18 +10,23 @@ Budget in one line: Google AI Pro, 200 units a month. A100 is 6.73 units/hour, L
 1.5, G4 about 10 (see [per-GPU notes](#9-per-gpu-notes)). A held GPU bills every minute, so steps 3
 and 8 matter as much as the generation.
 
-## Quick path (Amp orb, the usual case)
+## Quick path (the usual case: the machine that holds GPUs)
 
 ```bash
 bash scripts/bootstrap.sh                                  # once per machine; restores the login
 source config/account.env && colab usage                   # read-only; stop if below MIN_BALANCE
-amp orb service start studio-h3 --command 'bash scripts/studio-up.sh h3 minimax-h3 60 60 A100 G4'
-amp orb service logs -n 20 studio-h3                       # watch for "GOT=A100" and "comfyui reachable"
-amp orb portal 8188 --title 'ComfyUI'                      # give the printed URL to the user
+bash scripts/gpu-request.sh h3 minimax-h3 60 60 A100 G4    # returns at once; systemd does the grab
+bash scripts/gpu-status.sh                                 # repeat until it says phase=holding
+curl -s http://127.0.0.1:8188/system_stats                 # ComfyUI, on that machine
 # generate (step 6), copy outputs back (step 7)
-colab stop -s h3                                           # or let idle-stop do it (step 8)
+bash scripts/gpu-release.sh h3                             # or let the watchdog do it (step 8)
 colab sessions && colab usage                              # confirm, then report units
 ```
+
+`gpu-request.sh` is the durable route: the GPU is held by a systemd service on that machine, so it
+survives the agent thread, a logout, and a reboot. See [gpu-holder.md](gpu-holder.md), including how a
+thread on another machine (an orb) submits work to it. The orb-service route in step 3 still works on a
+machine without the holder.
 
 Everything below explains each of those, plus the manual route when there is no orb.
 
@@ -103,7 +108,21 @@ Active assignments: 2
 GPUs are often busy and answer HTTP 503 for 10 to 30 minutes at a time (worst in the India evening,
 around 15:30-16:00 UTC). That is capacity, not a refusal, and it costs nothing.
 
-**In an Amp orb**, start the whole grab-and-set-up as a supervised service, then keep working:
+**On the machine that holds GPUs** (the always-on server: a thread on it, or ssh to it), ask its
+holder service and return at once:
+
+```bash
+bash scripts/gpu-request.sh h3 minimax-h3 60 60 A100 G4
+bash scripts/gpu-status.sh        # repeat: phase=grabbing, then phase=holding
+```
+
+The grab, the recipe setup, the port forward and the idle watchdog all run under systemd, so they
+survive this thread, a logout, and a reboot; the monitor alerts if the GPU is lost. Full design,
+status fields and failure modes: [gpu-holder.md](gpu-holder.md). Never run a second grab from an orb
+for the same account: it would double the sessions, and an orb that pauses loses its GPU.
+
+**In an Amp orb** (a machine without the holder), start the whole grab-and-set-up as a supervised
+service, then keep working:
 
 ```bash
 amp orb service start studio-h3 --command 'bash scripts/studio-up.sh h3 minimax-h3 60 60 A100 G4'
@@ -136,6 +155,13 @@ Variant: GPU`.
 **If you are delegating**, give a child thread or subagent this job: run `studio-up.sh` as above, send
 the parent one message when the GPU is assigned (GPU type, time, balance) and one when the job is done
 or failed (outputs, units, session state). The orchestrating conversation never blocks on the wait.
+
+**Worker threads: keep images out of the context.** Look at an image only through `view_media` with an
+objective that says what to check ("does the can label show letters?"), and never attach, paste, or
+re-read full-size images, contact sheets, or frame sheets into the conversation. Two GPUs were lost on
+2026-11-24 because the holding thread crashed on `request body length limit exceeded` with contact
+sheets in its context. A worker reports at each milestone instead: GPU assigned, job done or failed,
+GPU released.
 
 **Manual, one GPU, no recipe** (bills from here):
 
@@ -377,6 +403,10 @@ parks instead of exiting, and a restart would grab a fresh GPU.
   cannot stop the GPU, and Colab's own idle timeout is the only backstop. A 60-minute idle window can
   burn about 6.7 A100 units. If you stop the GPU by hand, run `scripts/drive-save.sh <name>` first,
   or the outputs go with `/content`.
+- **On the holder machine, end a hold with `scripts/gpu-release.sh <name>`.** It saves the outputs,
+  stops the GPU and clears the hold. `systemctl --user stop colab-gpu-holder` only pauses the holder:
+  the hold stays requested, so the next start or boot adopts the same session again. When the watchdog
+  releases the GPU, the holder clears the hold by itself.
 - **Pro has no guaranteed background execution** (Ultra does). A long job needs this machine, and its
   port forward, connected until the job finishes; otherwise reattach and check `/history`.
 - **Sessions belong to the thread that started them.** In a fresh orb, `colab sessions` can show
@@ -430,6 +460,12 @@ add up. Prefer one.
 | `Warning: Could not read the OAuth token from the OS keyring` | Keyring not set up, or no token | `scripts/bootstrap.sh` (restores from the secret), else `scripts/login.sh`. |
 | Sign-in code expires, or `invalid_grant` | Number-match 2FA took too long | Use the user's own browser and paste promptly; not the orb browser. |
 | Watchdog log stops while the GPU is still up | The orb was paused or killed | `colab stop -s <name>` by hand. |
+| `2 sessions already exist (...); not grabbing another` | The guard in `grab-gpu.sh` refused to double up | `colab sessions`; stop the extra one, or let the holder adopt the named one. |
+| `a GPU session is already running but was started on another machine` | A `[?]` session started elsewhere; it has no local name | Stop it where it was started; the holder will not grab a second GPU. |
+| `no hold requested (...); exiting` | The holder service started with no hold | Expected after a boot with no hold. Request one: `scripts/gpu-request.sh`. |
+| `port 8188 is down; re-opening the forward` | The SSH forward died, the GPU did not | The keeper re-opens it; a dead VM ends the loop. |
+| Alert `gpu-lost` | Colab reclaimed the runtime | The monitor restarts the holder, which grabs again. |
+| Alert `holder-down` | The GPU is up but nothing will release it | The monitor restarts the holder, which adopts the session. |
 | `drive_save: Drive refused the request: no quota project` | The Drive API needs a quota project for this login | Set `DRIVE_QUOTA_PROJECT` (step 7). |
 | `drive_save: quota project '<id>' is not usable` | The project does not exist, or the Drive API is not enabled for it | Create and enable it, or fix the id. |
 | `drive-save: skipped, no DRIVE_QUOTA_PROJECT set` | Drive saving is not configured | Expected; outputs still go to `outputs/` with `colab download`. |

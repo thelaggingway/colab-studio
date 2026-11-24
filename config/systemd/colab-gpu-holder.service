@@ -1,0 +1,20 @@
+[Unit]
+Description=Colab Studio GPU holder (holds one Colab GPU from this machine)
+Documentation=file://@REPO@/docs/gpu-holder.md
+After=network-online.target
+Wants=network-online.target
+# A hold that keeps failing should stop retrying and be visible, not loop all night.
+StartLimitIntervalSec=3600
+StartLimitBurst=5
+
+[Service]
+Type=simple
+WorkingDirectory=@REPO@
+ExecStart=/usr/bin/env bash @REPO@/scripts/gpu-holder.sh
+# A failure is retried; a clean exit is not, because that means the watchdog released the GPU or
+# the hold was stopped on purpose.
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=default.target
