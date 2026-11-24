@@ -22,7 +22,7 @@ Units are per output: one 1024² image, one clip, one song, one audio hour, one 
 | Video with sound | **MiniMax H3** int8, 0.64 u / 10 s † | **Kandinsky 6.0 Lite** distill, 0.11 u / 5 s | **Kandinsky 6.0 Lite** distill, 0.19 u / 5 s |
 | Video, no sound | **Wan 2.2 TI2V-5B**, 0.9 u / 5 s 720p | **Wan 2.2 TI2V-5B**, 0.54 u | **HunyuanVideo 1.5** 480p distilled, 0.48 u |
 | Upscaling (image + video) | **SeedVR2 7B** int8, 0.45 u / 10 s clip | **SeedVR2 3B** int8, 0.29 u | **SeedVR2 3B** int8, 0.46 u |
-| Music and songs | **ACE-Step 1.5** turbo, 0.005 u | **ACE-Step 1.5** XL or MiniMax Music 3, 0.02-0.05 u | **ACE-Step 1.5** turbo, 0.008 u |
+| Music and songs | Dropped: use Suno (see `docs/music-generation.md`) | Dropped | Dropped |
 | Speech to text | **Qwen3-ASR 1.7B**, 0.10 u / audio hour | **Qwen3-ASR 1.7B**, 0.05 u | **Whisper large-v3-turbo** int8 or Qwen3-ASR 0.6B, 0.07 u |
 | Text to speech | Qwen3-TTS 1.7B, 3.7 u / audio hour | **Qwen3-TTS 1.7B**, 0.45 u | **Qwen3-TTS 1.7B**, 0.65 u |
 | Image to 3D | **TRELLIS.2** int8, 0.22 u | **TRELLIS.2** int8, 0.12 u | **TRELLIS.2** int8, 0.22 u |
@@ -117,9 +117,10 @@ Measured: 7B fp8 took 451 frames of 640×480 to 1440×1080 in 9.0 min at 0.83 fp
 ## Music and songs
 
 > **Dropped (2026-11-24):** after testing ACE-Step 1.5 turbo and XL against Suno, the owner chose Suno
-> for songs; see `docs/music-generation.md`. The notes below are the original research, kept for reference.
+> for songs; see `docs/music-generation.md`. Everything below in this section is historical research from
+> before that test, not a recommendation.
 
-**ACE-Step 1.5** (2B turbo / 4B XL, MIT) is the clear pick: full songs with vocals, 10 s to 10 min, 50+ languages, under 4 GB VRAM for the 2B turbo and 12-20 GB for XL, "under 2 s per full song on an A100 and under 10 s on an RTX 3090" †. ComfyUI has an AIO checkpoint template.
+**ACE-Step 1.5** (2B turbo / 4B XL, MIT) looked like the pick before testing: full songs with vocals, 10 s to 10 min, 50+ languages, under 4 GB VRAM for the 2B turbo and 12-20 GB for XL, "under 2 s per full song on an A100 and under 10 s on an RTX 3090" †. ComfyUI has an AIO checkpoint template.
 
 | File | Repo | Size † |
 | --- | --- | --- |
@@ -193,7 +194,7 @@ Avoid gpt-oss-120b (63 GB at MXFP4) and GLM-4.6 (355B) on these tiers. For batch
 
 **Video LoRAs.** Wan 2.2 A14B: 24 GB with musubi-tuner or ai-toolkit, 16 GB for I2V with SimpleTuner †. MiniMax H3, LTX-2.3 and Wan 2.2 are all supported by musubi-tuner and diffusion-pipe. A100 is the sane tier for video training; L4 works for short, low-resolution clips.
 
-**Music LoRAs.** ACE-Step 1.5 trains a style LoRA from a few songs †, which is the cheapest personalisation on this list.
+**Music LoRAs** (historical; music is dropped, see `docs/music-generation.md`). ACE-Step 1.5 trains a style LoRA from a few songs †.
 
 **Not practical here:** full fine-tunes (Wan A14B needs multi-GPU FSDP; LTX-2.5 full fine-tune is 4-8 H100s), and FLUX.2 dev training (non-commercial licence plus 32B).
 
